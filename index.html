@@ -1,0 +1,2733 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Fisio Liberty | Gestão Profissional</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/png" href="./icon.png">
+<meta name="theme-color" content="#121212">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Montserrat:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+window.onerror = function(message, source, lineno, colno, error) {
+    document.body.innerHTML = '<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background:#fff; color:#333; text-align:center; padding:20px;">' +
+    '<h1 style="color:#B53F41; margin-bottom:10px;">Opa! Conflito de Versão Detectado.</h1>' +
+    '<p style="margin-bottom:30px;">O navegador está tentando usar dados antigos com o sistema novo.</p>' +
+    '<button onclick="localStorage.clear(); location.reload();" style="background:#B53F41; color:white; border:none; padding:20px; font-size:18px; border-radius:10px; font-weight:bold; cursor:pointer;">CLIQUE AQUI PARA DESTRAVAR (RESET)</button>' +
+    '</div>';
+};
+</script>
+
+<style id="theme-style">
+/* --- BLOCO 1: PALETA DE CORES LUXO E FUNDO --- */
+:root {
+    --bg-body: #F5F7F5; 
+    --sidebar-bg: #2C4A3B; 
+    --card-bg: rgba(255, 255, 255, 0.70); 
+    --input-bg: rgba(255, 255, 255, 0.90);
+    --accent: #3A5A48;
+    --accent-dark: #1E3325;
+    --accent-gold: #C5A059; 
+    --btn-hover-pink: #F4E4E1;
+    --text-main: #333D36;
+    --text-light: #6A756D; 
+    --success: #5D8A45;
+    --danger: #B53F41;
+    --warning: #E0B555;
+    --radius: 16px; 
+    --shadow: 0 8px 30px -10px rgba(44, 74, 59, 0.08); 
+    --font-main: 'Lato', sans-serif;
+    --font-title: 'Montserrat', sans-serif;
+    --font-serif: 'Outfit', sans-serif;
+}
+
+* { 
+    margin: 0; padding: 0; box-sizing: border-box; 
+    font-family: var(--font-main); outline: none; 
+    -webkit-tap-highlight-color: transparent; 
+}
+
+body { 
+    background-color: var(--bg-body);
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(255, 255, 255, 0.8) 0px, transparent 65%),
+        radial-gradient(at 100% 0%, rgba(244, 228, 225, 0.2) 0px, transparent 65%),
+        radial-gradient(at 100% 100%, rgba(44, 74, 59, 0.05) 0px, transparent 65%),
+        radial-gradient(at 0% 100%, rgba(197, 160, 89, 0.05) 0px, transparent 65%);
+    display: flex; height: 100vh; overflow: hidden; 
+    color: var(--text-main); transition: all 0.3s ease;
+}
+
+body.focus-mode .sidebar { display: none !important; }
+body.focus-mode .top-bar { display: none !important; }
+body.focus-mode .main { flex: 1; border-radius: 0; }
+body.focus-mode .content { padding: 10px; }
+
+/* LOGIN SCREEN */
+#login-screen { position: fixed; inset: 0; background: var(--bg-body); z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column;}
+.login-box { background: var(--card-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.8); padding: 35px 25px; border-radius: 24px; text-align: center; width: 90%; max-width: 380px; box-shadow: var(--shadow); display: flex; flex-direction: column; align-items: center; }
+.login-box h3 { font-family: var(--font-serif); color: var(--accent); font-size: 2rem; margin-bottom: 5px; font-weight: 600; }
+.login-box h4 { font-family: var(--font-title); font-size: 0.75rem; color: var(--accent-gold); font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; }
+.login-box small { display: block; font-size: 0.75rem; color: var(--text-light); margin-bottom: 20px; letter-spacing: 1px; font-weight: 400; }
+
+/* SIDEBAR & NAV */
+.sidebar { width: 250px; background: var(--sidebar-bg); display: flex; flex-direction: column; padding: 25px 0; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 5px 0 20px rgba(0,0,0,0.05); z-index: 100; }
+.sidebar.collapsed { margin-left: -250px; } 
+.sidebar-header { padding: 0 20px 25px 20px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 20px; }
+.sidebar-header h3 { font-family: var(--font-serif); color: #ffffff; font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; }
+.sidebar-header p { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--accent-gold); margin-top: 4px; letter-spacing: 1.5px; opacity: 0.9; }
+.sidebar-header small { font-size: 0.75rem; color: rgba(255,255,255,0.7); display: block; margin-top: 8px; font-weight: 400; letter-spacing: 0.5px; }
+
+.nav-menu { flex: 1; padding: 0 10px; overflow-y: auto; }
+.nav-item { padding: 10px 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: all 0.3s; font-size: 0.85rem; border-radius: 12px; margin-bottom: 4px; color: rgba(255,255,255,0.7); font-weight: 500; border-left: 3px solid transparent; }
+.nav-item:hover { background: rgba(255,255,255,0.05); color: #ffffff; transform: translateX(2px); border-left: 3px solid var(--accent-gold); }
+.nav-item.active { background: rgba(255,255,255,0.1); color: #ffffff; font-weight: 600; border-left: 3px solid var(--accent-gold); }
+.nav-item i { font-size: 0.9rem; opacity: 0.8; width: 18px; text-align: center; color: var(--accent-gold); }
+
+/* MAIN CONTENT */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; transition: all 0.3s ease; }
+.top-bar { padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255,255,255,0.5); z-index: 10; transition: all 0.3s ease; }
+.top-bar-left { display: flex; align-items: center; gap: 15px; flex: 1; }
+.top-bar h3 { font-family: var(--font-serif); font-size: 1.5rem; color: var(--accent); font-weight: 600; margin: 0; } 
+#relogio { font-family: var(--font-title); font-weight: 600; color: var(--accent-gold); font-size: 0.9rem; background: var(--input-bg); padding: 6px 12px; border-radius: 10px; border: 1px solid rgba(197, 160, 89, 0.2); }
+
+#btn-mobile-menu { display: inline-block; font-size: 1.2rem; cursor: pointer; border: none; background: transparent; color: var(--accent); margin-right: 5px; transition: 0.2s; }
+#btn-mobile-menu:hover { color: var(--accent-gold); transform: scale(1.1); }
+
+.content { flex: 1; padding: 25px 35px; overflow-y: auto; scroll-behavior: smooth; transition: all 0.3s ease; }
+.tab-content { display: none; animation: fadeIn 0.4s ease; }
+.tab-content.active { display: block; }
+
+/* UI COMPONENTS */
+.card { background: var(--card-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.8); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; box-shadow: var(--shadow); color: var(--text-main); transition: all 0.3s; }
+.card:hover { transform: translateY(-2px); box-shadow: 0 12px 30px -10px rgba(44, 74, 59, 0.1); border-color: rgba(197, 160, 89, 0.4); }
+.card h4, .card h5 { font-family: var(--font-serif); color: var(--accent); margin-bottom: 15px; font-weight: 600; font-size: 1.2rem; }
+
+/* EMPTY STATES */
+.empty-state { padding: 40px 20px; text-align: center; color: var(--text-light); animation: fadeIn 0.5s; }
+.empty-state i { font-size: 3rem; color: rgba(197, 160, 89, 0.4); margin-bottom: 15px; display: block; }
+.empty-state p { font-size: 0.9rem; font-weight: 500; font-family: var(--font-title); }
+
+.table-container { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.7); border-radius: var(--radius); overflow-x: auto; -webkit-overflow-scrolling: touch; box-shadow: var(--shadow); }
+.table-container::-webkit-scrollbar { height: 8px; }
+.table-container::-webkit-scrollbar-thumb { background: rgba(197, 160, 89, 0.4); border-radius: 4px; }
+table { width: 100%; border-collapse: collapse; min-width: 800px; }
+th { background: rgba(255,255,255,0.3); padding: 12px 15px; text-align: left; font-size: 0.7rem; text-transform: uppercase; color: var(--accent); font-weight: 600; border-bottom: 1px solid rgba(0,0,0,0.06); }
+td { padding: 12px 15px; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 0.85rem; color: var(--text-main); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.4); }
+
+/* BOTOES */
+.btn { padding: 10px 20px; border: none; background: transparent; cursor: pointer; border-radius: 12px; font-size: 0.8rem; font-weight: 600; transition: all 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--font-title); color: var(--text-main); }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(44, 74, 59, 0.1); }
+.btn-filled { background: var(--accent); color: white; border: none; }
+.btn-filled:hover { background: var(--accent-dark); color: #ffffff; }
+
+.btn-small { padding: 8px 14px; font-size: 0.75rem; border: 1px solid rgba(44, 74, 59, 0.2); border-radius: 10px; background: var(--card-bg); color: var(--accent); font-weight: 600; }
+.btn-small:hover { background: var(--btn-hover-pink); border-color: transparent; color: var(--accent-dark); }
+
+.btn-action { width: 32px; height: 32px; border-radius: 10px; border: none; background: var(--card-bg); color: var(--accent); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: 0.3s; }
+.btn-action:hover { background: var(--btn-hover-pink); color: var(--accent-dark); transform: translateY(-2px); }
+
+/* INPUTS REFINADOS */
+input, select, textarea { width: 100%; padding: 10px 14px; margin: 6px 0 12px 0; border: 1px solid rgba(44, 74, 59, 0.1); border-radius: 12px; background: var(--input-bg); font-size: 0.85rem; color: var(--text-main); transition: all 0.3s ease; }
+input:focus, select:focus, textarea:focus { border-color: rgba(197, 160, 89, 0.5); box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.1); }
+label { font-size: 0.7rem; font-weight: 600; color: var(--accent); text-transform: uppercase; margin-left: 4px; letter-spacing: 1px; opacity: 0.8; }
+
+/* TOAST NOTIFICATIONS */
+#toast-container { position: fixed; bottom: 30px; right: 30px; z-index: 100000; display: flex; flex-direction: column; gap: 10px; }
+.toast { background: rgba(44, 74, 59, 0.95); color: #fff; padding: 14px 20px; border-radius: 12px; font-size: 0.85rem; font-weight: 500; font-family: var(--font-title); box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; animation: slideInRight 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); border-left: 4px solid var(--accent-gold); backdrop-filter: blur(10px); }
+.toast.toast-error { background: rgba(181, 63, 65, 0.95); border-left-color: #ffb3b3; }
+.toast.fadeOut { animation: fadeOutRight 0.4s forwards; }
+
+@keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes fadeOutRight { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+
+/* OFFCANVAS HISTÓRICO LATERA */
+.offcanvas { position: fixed; top: 0; right: -420px; width: 100%; max-width: 400px; height: 100vh; background: var(--bg-body); box-shadow: -5px 0 30px rgba(0,0,0,0.15); z-index: 100001; transition: right 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; border-left: 1px solid rgba(255,255,255,0.5); }
+.offcanvas.open { right: 0; }
+.offcanvas-header { padding: 20px; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; background: var(--sidebar-bg); color: #fff; }
+.offcanvas-body { padding: 20px; overflow-y: auto; flex: 1; }
+.status-badge { padding: 4px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 700; color: white; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid transparent; }
+.bg-agendado { background-color: var(--accent); border-color: var(--accent-dark); }
+.bg-atendido { background-color: var(--success) !important; color: white !important; border-color: rgba(0,0,0,0.1) !important; }
+.bg-remarcado { background-color: var(--warning) !important; color: #fff !important; border-color: var(--warning) !important; }
+.bg-cancelado { background-color: var(--danger) !important; color: white !important; border-color: var(--danger) !important; text-decoration: line-through !important; }
+
+/* GALERIA CLÍNICA */
+.gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 15px; }
+.gallery-item { position: relative; border-radius: 10px; overflow: hidden; border: 2px solid rgba(197, 160, 89, 0.3); aspect-ratio: 1; cursor: pointer; }
+.gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
+.gallery-item:hover img { transform: scale(1.05); }
+.gallery-item .delete-btn { position: absolute; top: 5px; right: 5px; background: rgba(181, 63, 65, 0.9); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: 0.7rem; cursor: pointer; display: none; }
+.gallery-item:hover .delete-btn { display: block; }
+
+/* AGENDA E CALENDÁRIO */
+.view-controls { display: flex; background: rgba(255,255,255,0.5); border-radius: 20px; border: 1px solid rgba(255,255,255,0.8); padding: 4px; margin-left: 10px; }
+.view-btn { background: transparent; border: none; padding: 6px 14px; border-radius: 16px; font-size: 0.75rem; font-weight: 700; color: var(--text-light); cursor: pointer; transition: 0.3s; }
+.view-btn.active { background: var(--accent); color: white; }
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+.cal-header { text-align: center; font-size: 0.7rem; font-weight: 700; color: var(--text-light); text-transform: uppercase; padding-bottom: 6px; }
+.cal-day { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.9); border-radius: 14px; min-height: 90px; padding: 8px; cursor: pointer; transition: all 0.2s; position: relative; }
+.cal-day:hover { border-color: rgba(197, 160, 89, 0.5); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+.cal-day.today { border: 2px solid var(--accent-gold); }
+.cal-day.blocked { background: rgba(255, 235, 235, 0.6); cursor: not-allowed !important; opacity: 0.9; border-color: var(--danger); }
+.cal-num { font-weight: 700; font-size: 0.9rem; color: var(--accent); margin-bottom: 6px; display: block; font-family: var(--font-serif); }
+.cal-dots { display: flex; flex-wrap: wrap; gap: 4px; }
+.cal-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; cursor: pointer; transition: transform 0.2s; }
+.cal-dot:hover { transform: scale(1.3); }
+
+.week-view-container { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+.week-col { background: rgba(255,255,255,0.45); border-radius: 14px; padding: 8px; min-height: 200px; border: 1px solid rgba(255,255,255,0.8); }
+.week-header { text-align: center; font-weight: 700; color: var(--accent); border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 8px; margin-bottom: 8px; font-size: 0.9rem; }
+.week-card { background: var(--card-bg); padding: 12px 14px; border-radius: 10px; border-left: 5px solid var(--accent); margin-bottom: 12px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; color: var(--text-main); font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+.week-card:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+.timeline-container { background: rgba(255,255,255,0.45); border-radius: 16px; border: 1px solid rgba(255,255,255,0.8); margin-top: 15px; padding-bottom: 50px; }
+.timeline-row { display: flex; border-bottom: 1px solid rgba(0,0,0,0.04); transition: 0.2s; align-items: stretch; cursor: pointer; position: relative; min-height: 65px; }
+.timeline-row:hover { background: rgba(255,255,255,0.6); }
+.timeline-row.blocked-row { background: rgba(255, 235, 235, 0.4); cursor: not-allowed; pointer-events: none; }
+.time-label { width: 70px; border-right: 1px solid rgba(0,0,0,0.04); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--accent-gold); font-size: 0.75rem; flex-shrink: 0; font-family: var(--font-title); }
+.events-track { flex: 1; position: relative; display: block; }
+.grouped-card { border-left: 4px solid var(--accent); padding: 6px 10px; border-radius: 10px; cursor: pointer; transition: 0.2s; display: flex; align-items: flex-start; flex-direction: column; border: 1px solid rgba(255,255,255,1); position: absolute; left: 10px; right: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 5; overflow: hidden; }
+.grouped-card:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.12); z-index: 10; transform: translateY(-1px); }
+.chips-container { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; margin-top: 5px; }
+.chip { padding: 4px 10px; border-radius: 16px; font-size: 0.7rem; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 4px; border: 1px solid rgba(0,0,0,0.05); }
+.chip:hover { opacity: 0.8; transform: translateY(-1px); }
+
+/* DASHBOARD LISTS E GROWTH */
+#metricas-crescimento { background: var(--input-bg); padding: 6px 12px; border-radius: 10px; border: 1px solid rgba(197, 160, 89, 0.2); }
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:20px}
+.stat-box{padding:20px;border-radius:var(--radius);text-align:center;font-weight:bold;color:white;box-shadow:0 10px 20px rgba(0,0,0,0.08); transition: 0.3s; }
+.stat-box span{font-size:1.6rem;margin-top:4px;display:block;font-family:var(--font-serif); font-weight: 700;}
+
+/* NOVOS WIDGETS DASHBOARD */
+.dashboard-widgets-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; margin-top: 20px; }
+.dash-widget { background: var(--card-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); padding: 15px 20px; border-radius: var(--radius); box-shadow: var(--shadow); max-height: 280px; display: flex; flex-direction: column; transition: 0.3s; }
+.dash-widget:hover { transform: translateY(-2px); border-color: rgba(197, 160, 89, 0.3); }
+.dash-widget h5 { font-family: var(--font-serif); color: var(--accent); margin-bottom: 12px; font-weight: 600; font-size: 1rem; border-bottom: 2px solid rgba(197, 160, 89, 0.1); padding-bottom: 10px; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.widget-content { flex: 1; overflow-y: auto; padding-right: 5px; }
+.widget-content::-webkit-scrollbar { width: 4px; }
+.widget-content::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
+.widget-item { padding: 10px 0; border-bottom: 1px dashed rgba(0,0,0,0.06); font-size: 0.85rem; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; line-height: 1.3; }
+.widget-item:last-child { border-bottom: none; }
+.resumo-dado { display: flex; flex-direction: column; text-align: center; background: rgba(0,0,0,0.02); border-radius: 10px; padding: 10px; flex: 1; }
+.resumo-dado span { font-size: 1.4rem; font-weight: 700; font-family: var(--font-serif); margin-bottom: 2px; }
+
+/* ANAMNESE E SEÇÕES ESPECÍFICAS */
+.ana-section-title { font-size: 0.9rem; color: var(--accent); margin: 20px 0 10px 0; border-bottom: 2px solid rgba(197, 160, 89, 0.2); padding-bottom: 8px; display: flex; align-items: center; gap: 8px; font-family: var(--font-serif); font-weight: 600; }
+.ana-section-title i { color: var(--accent-gold); }
+
+/* PAGINATION */
+.pagination-container { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 15px; }
+.page-btn { padding: 6px 12px; border: 1px solid rgba(44,74,59,0.2); background: var(--card-bg); border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: bold; color: var(--accent); }
+.page-btn:hover { background: var(--accent); color: white; }
+.page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* MODAL VITRIFICADO */
+.modal { display: none; position: fixed; inset: 0; background: rgba(44, 74, 59, 0.2); z-index: 1000; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items: center; justify-content: center; animation: fadeIn 0.3s ease; }
+.modal-content { background: var(--card-bg); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,1); width: 95%; max-width: 500px; padding: 25px; border-radius: 20px; box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.2); max-height: 90vh; overflow-y: auto; color: var(--text-main); position: relative; }
+.modal-content h3 { font-family: var(--font-serif); text-align: center; margin-bottom: 20px; color: var(--accent); font-size: 1.4rem; font-weight: 600; }
+
+footer { padding: 15px; font-size: 0.65rem; text-align: center; background: transparent; color: var(--text-light); text-transform: uppercase; font-weight: 600; letter-spacing: 1px; opacity: 0.7; }
+
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+@keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+/* RESPONSIVIDADE */
+.mobile-overlay { display: none; position: fixed; inset: 0; background: rgba(44, 74, 59, 0.1); z-index: 99; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+
+@media (max-width: 768px) {
+    .sidebar { position: fixed; left: -260px; top: 0; height: 100%; z-index: 100; border-radius: 0 20px 20px 0; margin-left: 0 !important; }
+    .sidebar.open { left: 0; }
+    .mobile-overlay.open { display: block; }
+    .top-bar { padding: 12px 20px; }
+    .content { padding: 15px; }
+    .week-view-container { grid-template-columns: 1fr; }
+    .login-box { padding: 30px 20px; }
+    .offcanvas { right: -100%; max-width: 100%; }
+}
+
+.chip-dia { padding: 6px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: 0.2s; border: 1px solid rgba(0,0,0,0.1); background: var(--card-bg); color: var(--text-light); display: inline-block; text-align: center; }
+.chip-dia.active { background: var(--accent); color: white; border-color: var(--accent); }
+</style>
+    <body>
+
+<div id="toast-container"></div>
+<div class="mobile-overlay" onclick="toggleMenuMobile()"></div>
+
+<div class="offcanvas" id="offcanvas-historico">
+    <div class="offcanvas-header">
+        <h4 style="margin:0; font-family: var(--font-serif);"><i class="fas fa-history"></i> Histórico do Paciente</h4>
+        <button class="btn-action" onclick="fecharHistorico()" style="background:transparent; color:#fff;"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="offcanvas-body" id="offcanvas-historico-body"></div>
+</div>
+
+<div id="modalConfirm" class="modal" style="z-index: 100000;">
+    <div class="modal-content" style="max-width: 320px; text-align: center;">
+        <i class="fas fa-exclamation-triangle" style="font-size: 2.5rem; color: var(--warning); margin-bottom: 15px; display: block;"></i>
+        <h4 id="confirm-msg" style="margin-bottom: 25px; font-family: var(--font-main); font-size: 1rem; color: var(--text-main);">Tem certeza?</h4>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn btn-filled" id="btn-confirm-yes" style="flex: 1; background: var(--danger);">Sim, confirmar</button>
+            <button class="btn" onclick="closeModal('modalConfirm')" style="flex: 1; border: 1px solid rgba(0,0,0,0.1);">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<div id="modalExcluirPaciente" class="modal" style="z-index: 100000;">
+    <div class="modal-content" style="max-width: 380px; text-align: center;">
+        <i class="fas fa-user-times" style="font-size: 2.5rem; color: var(--danger); margin-bottom: 15px; display: block;"></i>
+        <h4 style="margin-bottom: 10px; font-family: var(--font-main); color: var(--text-main);">Excluir Paciente?</h4>
+        <p style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 15px;">Esta ação removerá o cadastro de <strong id="del-pac-nome"></strong>.</p>
+        
+        <div style="text-align: left; background: rgba(181, 63, 65, 0.05); padding: 15px; border-radius: 10px; border: 1px solid rgba(181, 63, 65, 0.2); margin-bottom: 20px;">
+            <label style="display: flex; align-items: flex-start; gap: 10px; font-size: 0.8rem; color: var(--danger); cursor: pointer; text-transform: none; font-weight: 600;">
+                <input type="checkbox" id="del-cascade" style="width: 20px; height: 20px; margin: 0; flex-shrink: 0;">
+                Apagar também todos os Agendamentos, Prontuários, Avaliações e Financeiro (Exclusão Definitiva LGPD)
+            </label>
+        </div>
+        <input type="hidden" id="del-pac-id">
+        <div style="display: flex; gap: 10px;">
+            <button class="btn btn-filled" onclick="confirmarExclusaoCascata()" style="flex: 1; background: var(--danger);">Excluir</button>
+            <button class="btn" onclick="closeModal('modalExcluirPaciente')" style="flex: 1; border: 1px solid rgba(0,0,0,0.1);">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<div id="modalLicenca" class="modal" style="display:none; z-index:99999; background: var(--bg-body);">
+<div class="modal-content" style="border: 1px solid var(--accent-gold);">
+<h3 style="color:var(--accent);">Bem-vinda ao Fisio Liberty</h3>
+<p style="text-align:center; color:var(--text-light); margin-bottom:15px; font-size:0.85rem;">Configure sua identidade profissional.</p>
+<label>Seu Nome Completo</label> 
+<input id="lic-nome" type="text" placeholder="Ex: Dra. Jaqueline">
+<label>Seu Número de Registro</label> 
+<input id="lic-crefito" type="text" placeholder="Ex: CREFITO 123456-F">
+<label>Profissão</label> 
+<input value="Fisioterapeuta" disabled style="background:rgba(0,0,0,0.02); font-weight:bold; color:var(--text-light);">
+<button class="btn btn-filled" style="width:100%; margin-top:10px; padding:12px;" onclick="ativarLicenca()">ATIVAR SISTEMA</button>
+</div>
+</div>
+
+<div id="modalEditarPacote" class="modal" style="z-index: 100000;">
+    <div class="modal-content" style="max-width: 380px;">
+        <h3 style="text-align:center; color: var(--warning);"><i class="fas fa-layer-group"></i> Edição de Pacote</h3>
+        <p style="text-align:center; font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">Altere as sessões futuras deste pacote de uma vez só.</p>
+        <input type="hidden" id="edit-pacote-id">
+        <input type="hidden" id="edit-pacote-sessao-atual-id">
+        
+        <label>Mudar o Horário (Todas as Futuras)</label>
+        <div style="display:flex; gap:10px; margin-bottom: 15px;">
+            <div style="flex:1"><input type="time" id="edit-pacote-hora" title="Hora de Início"></div>
+            <div style="flex:1"><input type="time" id="edit-pacote-hora-fim" title="Hora do Fim"></div>
+        </div>
+        
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button class="btn btn-filled" style="flex: 1; background: var(--warning); color: #fff;" onclick="salvarEdicaoMassaPacote()"><i class="fas fa-sync"></i> Atualizar Horários</button>
+            <button class="btn btn-filled" style="flex: 1; background: var(--danger); color: #fff;" onclick="cancelarRestantePacote()"><i class="fas fa-trash"></i> Cancelar Restantes</button>
+        </div>
+        <button class="btn" style="width:100%; margin-top:10px; border: 1px solid rgba(0,0,0,0.1);" onclick="closeModal('modalEditarPacote')">Fechar</button>
+    </div>
+</div>
+
+<div id="login-screen">
+    <div class="login-box">
+        <h3 id="lbl-login-nome">Fisioterapeuta</h3>
+        <h4>Fisioterapeuta</h4>
+        <small id="lbl-login-crefito">Gestão Profissional</small>
+        <input type="password" id="pass-input" placeholder="Digite sua senha" style="text-align: center; font-size: 1rem; padding: 12px;">
+        <button class="btn btn-filled" style="width: 100%; padding: 12px; margin-top:5px;" onclick="checkLogin()">ACESSAR SISTEMA</button>
+    </div>
+</div>
+
+<div class="sidebar">
+    <div class="sidebar-header">
+        <h3 id="lbl-side-nome">Dra. Fisioterapeuta</h3>
+        <p>Fisioterapeuta</p>
+        <small id="lbl-side-crefito">CREFITO</small>
+    </div>
+    <nav class="nav-menu">
+        <div class="nav-item active" onclick="showTab('dashboard')"><i class="fas fa-home"></i> Início</div>
+        <div class="nav-item" onclick="showTab('agenda')"><i class="far fa-calendar-alt"></i> Agenda</div>
+        <div class="nav-item" onclick="showTab('pacientes')"><i class="fas fa-user-injured"></i> Pacientes</div>
+        <div class="nav-item" onclick="showTab('prontuario')"><i class="fas fa-folder-open"></i> Prontuários</div>
+        <div class="nav-item" onclick="showTab('anamnese')"><i class="fas fa-clipboard-list"></i> Anamnese</div>
+        <div class="nav-item" onclick="showTab('recibos')"><i class="fas fa-receipt"></i> Recibos</div>
+        <div class="nav-item" onclick="showTab('financeiro')"><i class="fas fa-wallet"></i> Financeiro</div>
+        <div class="nav-item" onclick="showTab('config')"><i class="fas fa-cog"></i> Configurações</div>
+    </nav>
+</div>
+
+<div class="main">
+    <header class="top-bar">
+        <div class="top-bar-left">
+            <button id="btn-mobile-menu" onclick="toggleMenuMobile()"><i class="fas fa-bars"></i></button>
+            <h3>Visão Geral</h3>
+        </div>
+        <div id="relogio">--:--</div>
+    </header>
+
+    <div class="content">
+        <div id="dashboard" class="tab-content active">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <h4 style="font-family: var(--font-serif); color: var(--accent); font-size: 1.2rem; font-weight: 700; margin:0;">Minha Agenda</h4>
+                    <div id="metricas-crescimento"></div>
+                </div>
+                <div class="view-controls">
+                    <button class="view-btn active" id="btn-dash-dia" onclick="mudarView('dia', 'dash-calendar-container')">Dia</button>
+                    <button class="view-btn" id="btn-dash-sem" onclick="mudarView('sem', 'dash-calendar-container')">Semana</button>
+                    <button class="view-btn" id="btn-dash-mes" onclick="mudarView('mes', 'dash-calendar-container')">Mês</button>
+                </div>
+            </div>
+            
+            <div id="dash-calendar-container"></div>
+
+            <div class="dashboard-widgets-grid">
+                <div class="dash-widget">
+                    <h5><i class="fas fa-calendar-day"></i> Resumo de Hoje</h5>
+                    <div class="widget-content" style="display:flex; gap:10px; align-items:center;">
+                        <div class="resumo-dado">
+                            <span id="wdg-agendados" style="color:var(--text-main);">0</span>
+                            <small>Agendados</small>
+                        </div>
+                        <div class="resumo-dado">
+                            <span id="wdg-atendidos" style="color:var(--success);">0</span>
+                            <small>Atendidos</small>
+                        </div>
+                        <div class="resumo-dado">
+                            <span id="wdg-faltas" style="color:var(--danger);">0</span>
+                            <small>Faltas/Canc.</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-widget">
+                    <h5><i class="fas fa-box-open" style="color:var(--accent-gold);"></i> Fim de Pacote</h5>
+                    <div class="widget-content" id="widget-pacotes"></div>
+                </div>
+
+                <div class="dash-widget">
+                    <h5><i class="fas fa-clipboard-list" style="color:var(--danger);"></i> Pendências</h5>
+                    <div class="widget-content" id="widget-pendencias"></div>
+                </div>
+
+                <div class="dash-widget">
+                    <h5><i class="fas fa-birthday-cake" style="color:var(--warning);"></i> Aniversariantes</h5>
+                    <div class="widget-content" id="lista-aniversariantes"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="financeiro" class="tab-content">
+            <div class="card" style="display:flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap:10px;">
+                <button class="btn btn-filled" onclick="openModal('modalFinanceiro')"><i class="fas fa-plus-circle"></i> Novo Lançamento</button>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <label style="margin:0;">Filtro:</label>
+                    <select id="fin-filtro-mes" style="width:120px; margin:0;" onchange="atualizarUI()">
+                        <option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option>
+                        <option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option>
+                        <option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option>
+                        <option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option>
+                    </select>
+                    <select id="fin-filtro-ano" style="width:90px; margin:0;" onchange="atualizarUI()"></select>
+                    <button class="btn btn-filled" onclick="gerarRelatorioFinanceiroPDF()" title="Exportar PDF"><i class="fas fa-file-pdf"></i></button>
+                    <button class="btn btn-filled" style="background: var(--success);" onclick="exportarFinanceiroCSV()" title="Exportar para Excel/Contador"><i class="fas fa-file-excel"></i> CSV</button>
+                </div>
+            </div>
+
+            <div class="stat-grid">
+                <div class="stat-box" style="background: linear-gradient(135deg, rgba(93, 138, 69, 0.9), rgba(93, 138, 69, 1));">RECEITAS<br><span id="fin-in">R$ 0,00</span></div>
+                <div class="stat-box" style="background: linear-gradient(135deg, rgba(181, 63, 65, 0.9), rgba(181, 63, 65, 1));">DESPESAS<br><span id="fin-out">R$ 0,00</span></div>
+                <div class="stat-box" style="background: linear-gradient(135deg, rgba(44, 74, 59, 0.9), rgba(44, 74, 59, 1));">SALDO<br><span id="fin-saldo">R$ 0,00</span></div>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead><tr><th>Data</th><th>Descrição</th><th>Valor</th><th>Ação</th></tr></thead>
+                    <tbody id="tbody-financeiro"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="prontuario" class="tab-content">
+            <div class="card" style="display:flex; gap:15px; align-items:flex-end; flex-wrap:wrap;">
+                <div style="flex:2;">
+                    <label>Selecione o Paciente (ID Seguro)</label>
+                    <select id="pdf-paciente-select" class="select-paciente" style="margin:0;" onchange="renderizarProntuarioTela()">
+                        <option value="">Selecione um paciente...</option>
+                    </select>
+                </div>
+                <button class="btn btn-filled" onclick="gerarPDFCompleto()" style="height: 40px;"><i class="fas fa-file-medical"></i> Exportar PDF</button>
+            </div>
+            
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap: wrap; gap:10px;">
+                    <h5 style="margin:0;">Linha do Tempo e Anexos</h5>
+                    <div>
+                        <button class="btn btn-filled btn-small" onclick="document.getElementById('upload-galeria').click()" style="background: var(--accent-gold);"><i class="fas fa-camera"></i> Anexar Foto</button>
+                        <input type="file" id="upload-galeria" accept="image/*" style="display:none;" onchange="salvarFotoGaleria(event)">
+                        <button class="btn btn-filled btn-small" onclick="openModal('modalEvolucao')"><i class="fas fa-pen"></i> Nova Evolução</button>
+                    </div>
+                </div>
+
+                <div id="area-galeria" style="display:none; margin-bottom: 20px; border-bottom: 2px dashed rgba(0,0,0,0.05); padding-bottom: 15px;">
+                    <h6 style="color:var(--accent); font-size:0.85rem;"><i class="fas fa-images"></i> Avaliação Postural e Exames</h6>
+                    <div class="gallery-grid" id="prontuario-galeria"></div>
+                </div>
+
+                <div id="prontuario-tela-lista" style="max-height: 500px; overflow-y: auto; padding-right: 10px;">
+                    <div class="empty-state"><i class="fas fa-notes-medical"></i><p>Selecione um paciente cadastrado para ver o histórico blindado.</p></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="pacientes" class="tab-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap: wrap;">
+                <div style="position: relative; flex: 1; max-width: 300px;">
+                    <i class="fas fa-search" style="position:absolute; left:12px; top:16px; color:var(--text-light);"></i>
+                    <input type="text" id="busca-paciente" placeholder="Buscar paciente..." style="padding-left:35px; margin:0;" onkeyup="atualizarUIPacientes(1)">
+                </div>
+                <button class="btn btn-filled" onclick="openModal('modalPacienteNovo')"><i class="fas fa-user-plus"></i> Novo Paciente</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead><tr><th>Nome (A-Z)</th><th>Nascimento</th><th>Mensageria Rápida</th><th style="text-align:right;">Ações</th></tr></thead>
+                    <tbody id="tbody-pacientes"></tbody>
+                </table>
+            </div>
+            <div class="pagination-container" id="pacientes-pagination"></div>
+        </div>
+
+        <div id="agenda" class="tab-content">
+            <div class="card" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px 20px;">
+                <div>
+                    <button class="btn btn-filled" onclick="novoAgendamento(getSafeDateISO(new Date()))"><i class="fas fa-plus"></i> Novo</button>
+                    <button class="btn btn-filled" style="background:var(--danger); border:none; margin-left: 5px;" onclick="bloquearDiaHoje()"><i class="fas fa-lock"></i> Bloqueios</button>
+                </div>
+                <div style="display:flex; align-items:center;">
+                    <div class="view-controls" style="margin-right:15px;">
+                        <button class="view-btn active" id="btn-ag-dia" onclick="mudarView('dia', 'agenda-calendar-container')">Dia</button>
+                        <button class="view-btn" id="btn-ag-sem" onclick="mudarView('sem', 'agenda-calendar-container')">Semana</button>
+                        <button class="view-btn" id="btn-ag-mes" onclick="mudarView('mes', 'agenda-calendar-container')">Mês</button>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <button class="btn-action" onclick="navegarAgenda(-1)"><i class="fas fa-chevron-left"></i></button>
+                        <span id="agenda-mes-ano-label" style="font-weight: 700; color: var(--accent); font-size: 0.9rem;">JANEIRO</span>
+                        <button class="btn-action" onclick="navegarAgenda(1)"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div id="agenda-calendar-container"></div>
+        </div>
+
+        <div id="anamnese" class="tab-content">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h4 style="margin: 0; text-align: center; flex: 1;">Avaliação Cinético-Funcional</h4>
+                    <button class="btn btn-small" onclick="document.body.classList.toggle('focus-mode')" style="background: var(--accent-gold); color: white; border: none;" title="Ocultar menus laterais"><i class="fas fa-expand"></i> Foco</button>
+                </div>
+                <div style="max-width:600px; margin: 0 auto;">
+                    <label>Selecione o Paciente (ID Seguro)</label>
+                    <select id="ana-paciente-select" class="select-paciente" style="margin-bottom:15px;" onchange="document.getElementById('ana-historico-container').style.display='none'; document.getElementById('campos-anamnese').style.display='none';">
+                        <option value="">Selecione um paciente...</option>
+                    </select>
+                    
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px; justify-content: center;">
+                        <button class="btn btn-filled" onclick="iniciarNovaFicha()" style="flex:1;"><i class="fas fa-file-medical"></i> NOVA FICHA</button>
+                        <button class="btn" style="border:1px solid var(--accent); color: var(--accent); flex:1;" onclick="toggleHistoricoAnamnese()"><i class="fas fa-history"></i> HISTÓRICO</button>
+                    </div>
+                </div>
+                
+                <div id="ana-historico-container" style="display:none; padding:15px; background:rgba(255,255,255,0.4); border-radius:12px; margin-bottom:15px; text-align: center;">
+                    <h6 style="margin-bottom:10px; color: var(--accent); font-size: 1rem;">Avaliações Anteriores</h6>
+                    <div id="ana-historico-lista" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; text-align:left;"></div>
+                </div>
+                
+                <div id="campos-anamnese" style="display: none; animation: fadeIn 0.4s;">
+                    <div id="btn-editar-container" style="display:none; text-align:right; margin-bottom:10px;">
+                        <button class="btn btn-small" onclick="habilitarEdicaoAnamnese()"><i class="fas fa-edit"></i> Editar Esta Ficha</button>
+                    </div>
+                    
+                    <h5 class="ana-section-title"><i class="fas fa-user-injured"></i> Histórico Clínico</h5>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                        <div><label>Queixa Principal</label><textarea id="ana-queixa" rows="2"></textarea></div>
+                        <div><label>HDA</label><textarea id="ana-hda" rows="2"></textarea></div>
+                    </div>
+                    <label>Antecedentes Pessoais</label><textarea id="ana-ant" rows="2"></textarea>
+                    
+                    <h5 class="ana-section-title"><i class="fas fa-pills"></i> Medicamentos e Exames</h5>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                        <div><label>Medicamentos</label><input type="text" id="ana-med"></div>
+                        <div><label>Exames Complementares</label><input type="text" id="ana-exames"></div>
+                    </div>
+                    
+                    <h5 class="ana-section-title"><i class="fas fa-clipboard-check"></i> Diagnóstico e Planejamento</h5>
+                    <label>Diagnóstico Fisioterapêutico</label><textarea id="ana-diag" rows="2"></textarea>
+                    <label>Limitações Funcionais</label><textarea id="ana-limit" rows="2"></textarea>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                        <div><label>Objetivos Terapêuticos</label><textarea id="ana-objetivos" rows="2"></textarea></div>
+                        <div><label>Prognóstico</label><textarea id="ana-prog" rows="2"></textarea></div>
+                    </div>
+                    
+                    <h5 class="ana-section-title"><i class="fas fa-file-medical-alt"></i> Exame Físico e Conduta</h5>
+                    <label>Inspeção / Palpação / Testes</label><textarea id="ana-fisico" rows="3"></textarea>
+                    <label>Conduta Terapêutica (Plano de Tratamento)</label><textarea id="ana-plano" rows="3"></textarea>
+                    <button id="btn-salvar-anamnese" class="btn btn-filled" style="width:100%; margin-top:15px; padding:12px;" onclick="salvarAnamnese()">Salvar Avaliação</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="recibos" class="tab-content">
+            <div class="card" style="max-width:500px; margin:0 auto;">
+                <h4 style="text-align:center;">Gerador de Recibos</h4>
+                <label>Selecione o Paciente</label>
+                <select id="rec-paciente-select" class="select-paciente">
+                    <option value="">Selecione um paciente...</option>
+                </select>
+                
+                <label>Valor (R$)</label><input type="text" id="rec-valor" placeholder="0,00" oninput="maskCurrency(this)">
+                
+                <div style="display:flex; gap: 10px; margin-top:10px;">
+                    <button class="btn btn-filled" style="flex:1;" onclick="gerarTextoRecibo()">Texto WhatsApp</button>
+                    <button class="btn btn-filled" style="flex:1; background: var(--accent-gold);" onclick="gerarPDFRecibo()">PDF Oficial</button>
+                </div>
+                
+                <div style="margin-top:20px; background:var(--input-bg); padding:15px; border-radius:12px; border: 1px solid rgba(255,255,255,0.8);">
+                    <label>Prévia do Texto</label><textarea id="rec-resultado" rows="5" readonly style="background:transparent; border:none; box-shadow:none; padding:0; margin-bottom: 10px; resize:none;"></textarea>
+                    <button class="btn" style="width:100%; border:1px solid var(--accent); color: var(--accent);" onclick="copiarRecibo()">Copiar Texto</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="config" class="tab-content">
+            <div class="card">
+                <h5>Aparência do Sistema</h5>
+                <div style="display:flex; gap:8px; flex-wrap: wrap; margin-bottom:20px;">
+                    <button class="btn btn-small" style="background:#F5F7F5; border-color:#3A5A48; color:#3A5A48;" onclick="aplicarTema('padrao')">Clínica Premium</button>
+                    <button class="btn btn-small" style="background:#F5F2EB; color:#5D4E46" onclick="aplicarTema('elegante')">Nude Clássico</button>
+                    <button class="btn btn-small" style="background:#121212; color:#ffffff" onclick="aplicarTema('noturno')">Dark Premium</button>
+                    <button class="btn btn-small" style="background:#eff6ff; color:#1e3a8a" onclick="aplicarTema('azul')">Azul Naval</button>
+                    <button class="btn btn-small" style="background:#faf5ff; color:#581c87" onclick="aplicarTema('lavanda')">Lavanda Gold</button>
+                </div>
+                <hr style="margin:20px 0; border:0; border-top:1px solid rgba(197, 160, 89, 0.3);">
+                
+                <h5>Logo da Clínica (Para Cabeçalhos de PDF)</h5>
+                <div style="display:flex; gap:15px; align-items:center; margin-bottom:15px;">
+                    <div id="preview-logo" style="width: 80px; height: 80px; border-radius: 10px; border: 2px dashed rgba(44,74,59,0.3); display: flex; align-items: center; justify-content: center; overflow: hidden; background: var(--input-bg);">
+                        <i class="fas fa-image" style="color:var(--text-light); font-size:1.5rem;" id="icone-logo-vazia"></i>
+                        <img id="img-logo-preview" style="display:none; width:100%; height:100%; object-fit:contain;">
+                    </div>
+                    <div>
+                        <button class="btn btn-small" onclick="document.getElementById('upload-logo').click()"><i class="fas fa-upload"></i> Carregar Logo</button>
+                        <button class="btn btn-small" style="color:var(--danger); border-color:transparent;" onclick="removerLogo()">Remover</button>
+                        <input type="file" id="upload-logo" accept="image/png, image/jpeg" style="display:none;" onchange="salvarLogo(event)">
+                        <small style="display:block; margin-top:5px; color:var(--text-light);">Recomendado: Fundo transparente (PNG), formato horizontal ou quadrado.</small>
+                    </div>
+                </div>
+
+                <hr style="margin:20px 0; border:0; border-top:1px solid rgba(197, 160, 89, 0.3);">
+                <h5>Serviços Oferecidos</h5>
+                <div style="display:flex; gap:10px; margin-bottom:15px;">
+                    <input type="text" id="new-serv-nome" placeholder="Ex: Pilates" style="margin:0;">
+                    <input type="color" id="new-serv-cor" value="#3A5A48" style="width:50px; padding:2px; height:38px; border-radius:8px; margin:0;">
+                    <button class="btn btn-filled" onclick="addServico()">Adicionar</button>
+                </div>
+                <div id="lista-servicos" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                <div class="card">
+                    <h5>Segurança</h5>
+                    <input type="password" id="nova-senha" placeholder="Nova Senha">
+                    <button class="btn" style="border: 1px solid var(--accent); color: var(--accent);" onclick="mudarSenha()">Atualizar Senha</button>
+                </div>
+                <div class="card">
+                    <h5>Backup de Dados</h5>
+                    <div style="display:flex; flex-direction:column; gap:10px;">
+                        <button class="btn btn-filled" onclick="fazerBackup()"><i class="fas fa-download"></i> Download Backup</button>
+                        <button class="btn" style="border:1px solid var(--accent); color:var(--accent);" onclick="document.getElementById('backup-upload').click()"><i class="fas fa-upload"></i> Restaurar</button>
+                        <input type="file" id="backup-upload" style="display:none" accept=".json" onchange="restaurarBackup()">
+                        <button class="btn" style="color:var(--danger); border:1px solid var(--danger);" onclick="resetSistema()"><i class="fas fa-trash-alt"></i> Resetar Tudo</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer-lgpd"><i class="fas fa-shield-alt"></i> SISTEMA SEGURO (LGPD) – <span id="lbl-footer-user">USUÁRIO</span></footer>
+</div>
+
+<div id="modalPacienteNovo" class="modal">
+    <div class="modal-content">
+        <h3 style="text-align:center;">Cadastro de Paciente</h3>
+        <form id="form-p">
+            <input type="hidden" id="p-id">
+            <label>Nome Completo *</label><input type="text" id="p-nome">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div><label>Nascimento</label><input type="date" id="p-nasc"></div>
+                <div><label>WhatsApp</label><input type="tel" id="p-tel" placeholder="(00) 00000-0000" oninput="maskPhone(this)"></div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div><label>CPF (Validação)</label><input type="text" id="p-cpf" placeholder="000.000.000-00" oninput="maskCPF(this)"></div>
+                <div><label>Profissão</label><input type="text" id="p-profissao"></div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div><label>Estado Civil</label><select id="p-civil"><option>Solteiro(a)</option><option>Casado(a)</option><option>Divorciado(a)</option><option>Viúvo(a)</option></select></div>
+                <div><label>Cliente Desde</label><input type="date" id="p-desde"></div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 2fr; gap:10px; margin-top: 5px;">
+                <div><label>CEP (Busca Auto)</label><input type="text" id="p-cep" placeholder="00000-000" onblur="buscarCEP(this.value)" oninput="this.value=this.value.replace(/\D/g,'').replace(/^(\d{5})(\d)/,'$1-$2')"></div>
+                <div><label>Endereço Completo</label><input type="text" id="p-end"></div>
+            </div>
+        </form>
+        <div style="display:flex; gap:10px; margin-top:15px;">
+            <button class="btn btn-filled" style="flex:1" onclick="salvarPaciente()">Salvar Paciente</button>
+            <button class="btn" style="flex:1; border: 1px solid rgba(0,0,0,0.1);" onclick="closeModal('modalPacienteNovo')">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<div id="modalFinanceiro" class="modal">
+    <div class="modal-content">
+        <h3 style="text-align:center;">Lançamento Financeiro</h3>
+        <form id="form-f">
+            <input type="hidden" id="f-id">
+            <label>Vincular a Paciente (Opcional)</label>
+            <select id="f-paciente" class="select-paciente">
+                <option value="">Nenhum / Avulso</option>
+            </select>
+            <label>Descrição *</label><input type="text" id="f-desc">
+            <label>Valor (R$) *</label><input type="text" id="f-valor" placeholder="0,00" oninput="maskCurrency(this)">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div><label>Data *</label><input type="date" id="f-data"></div>
+                <div><label>Tipo</label><select id="f-tipo"><option value="entrada">Receita</option><option value="saida">Despesa</option></select></div>
+            </div>
+        </form>
+        <div style="display:flex; gap:10px; margin-top:15px;">
+            <button class="btn btn-filled" style="flex:1" onclick="salvarFin()">Salvar</button>
+            <button class="btn" style="flex:1; border: 1px solid rgba(0,0,0,0.1);" onclick="closeModal('modalFinanceiro')">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<div id="modalEvolucao" class="modal">
+    <div class="modal-content">
+        <h3 style="text-align:center;">Nova Evolução</h3>
+        <p style="text-align: center; color: var(--danger); font-size: 0.8rem; margin-bottom: 10px;"><i class="fas fa-lock"></i> Após salva, a evolução não poderá ser alterada no banco de dados (CREFITO).</p>
+        <form id="form-ev">
+            <label>Selecione o Paciente</label>
+            <select id="ev-paciente" class="select-paciente">
+                <option value="">Selecione um paciente...</option>
+            </select>
+            <label>Descrição da Sessão</label><textarea id="ev-texto" rows="5"></textarea>
+        </form>
+        <div style="display:flex; gap:10px; margin-top:15px;">
+            <button class="btn btn-filled" style="flex:1" onclick="salvarEvolucao()">Gravar Evolução</button>
+            <button class="btn" style="flex:1; border: 1px solid rgba(0,0,0,0.1);" onclick="closeModal('modalEvolucao')">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<div id="modalAgendamento" class="modal" style="z-index:10000;">
+    <div class="modal-content">
+        <h3 style="text-align:center;">Novo Compromisso</h3>
+        <input type="hidden" id="ag-id">
+        <label>Paciente (ID Seguro)</label>
+        <select id="ag-paciente-select" class="select-paciente" onchange="document.getElementById('ag-paciente-input').style.display = this.value ? 'none' : 'block'">
+            <option value="">Avulso / Digitar Nome...</option>
+        </select>
+        <input type="text" id="ag-paciente-input" placeholder="Digite o nome do paciente avulso..." autocomplete="off">
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+            <div><label>Data</label><input type="date" id="ag-data"></div>
+            <div><label>Início</label><input type="time" id="ag-hora"></div>
+            <div><label>Fim</label><input type="time" id="ag-hora-fim"></div>
+        </div>
+        
+        <label>Cor da Etiqueta Livre</label>
+        <select id="ag-cor">
+            <option value="">Automático</option>
+            <option value="#E0F2FE">Azul Nuvem</option>
+            <option value="#D1FAE5">Verde Menta</option>
+            <option value="#FCE7F3">Rosa Bebê</option>
+            <option value="#FEF3C7">Amarelo Creme</option>
+            <option value="#EDE9FE">Lilás Suave</option>
+        </select>
+        <label>Observações</label><textarea id="ag-obs" rows="2"></textarea>
+        
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px; background: rgba(42, 82, 190, 0.05); padding: 8px; border-radius: 10px;">
+            <input type="checkbox" id="ag-prioridade" style="width: 18px; height: 18px; margin: 0;">
+            <label style="margin: 0; color: #2A52BE; font-weight: 700;">MARCAR COMO PRIORIDADE</label>
+        </div>
+
+        <div style="margin-bottom:15px; background:rgba(0,0,0,0.02); border:1px solid rgba(0,0,0,0.05); padding:10px; border-radius:10px;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:5px;">
+                <input type="checkbox" id="ag-is-pacote" style="width: 18px; height: 18px; margin: 0;" onchange="document.getElementById('ag-pacote-opts').style.display = this.checked ? 'block' : 'none';">
+                <label style="margin:0; font-weight:700;">Agendamento Recorrente / Pacote</label>
+            </div>
+            <div id="ag-pacote-opts" style="display:none; margin-top:10px;">
+                <div style="display:grid; grid-template-columns:2fr 1fr; gap:10px;">
+                    <div><label>Nome do Pacote</label><input type="text" id="ag-pacote-nome" placeholder="Ex: Pilates Mensal"></div>
+                    <div><label>Qtd Sessões</label><input type="number" id="ag-pacote-qtd" value="10" min="2" max="50"></div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr; gap:10px; margin-top:10px;">
+                    <div><label>Valor Total do Pacote (R$)</label><input type="text" id="ag-pacote-valor" placeholder="0,00" oninput="maskCurrency(this)"></div>
+                    <small style="color:var(--text-light); margin-top:-5px; display:block;"><i class="fas fa-bolt" style="color:var(--warning);"></i> Será lançado automaticamente no seu Financeiro como Receita.</small>
+                </div>
+                <label style="display:block; margin-top:10px;">Dias da Semana</label>
+                <div style="display:flex; gap:5px; flex-wrap:wrap; margin-top:5px;" id="ag-pacote-dias">
+                    <span class="chip-dia" data-dia="1" onclick="this.classList.toggle('active')">Seg</span>
+                    <span class="chip-dia" data-dia="2" onclick="this.classList.toggle('active')">Ter</span>
+                    <span class="chip-dia" data-dia="3" onclick="this.classList.toggle('active')">Qua</span>
+                    <span class="chip-dia" data-dia="4" onclick="this.classList.toggle('active')">Qui</span>
+                    <span class="chip-dia" data-dia="5" onclick="this.classList.toggle('active')">Sex</span>
+                    <span class="chip-dia" data-dia="6" onclick="this.classList.toggle('active')">Sáb</span>
+                    <span class="chip-dia" data-dia="0" onclick="this.classList.toggle('active')">Dom</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+            <button class="btn btn-filled" style="flex:1" onclick="salvarAgendamento()">Salvar</button>
+            <button class="btn" style="flex:1; border: 1px solid rgba(0,0,0,0.1);" onclick="closeModal('modalAgendamento')">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<div id="modalBloqueio" class="modal" style="z-index:10000;">
+    <div class="modal-content" style="max-width: 350px;">
+        <h3 style="text-align:center;">Gestão de Bloqueios</h3>
+        <input type="date" id="bloqueio-data-input" style="margin-bottom:15px;">
+        <div id="area-bloquear">
+            <label>Motivo</label>
+            <input type="text" id="bloqueio-motivo" placeholder="Ex: Feriado, Viagem...">
+            <button class="btn btn-filled" style="width:100%; background:var(--danger);" onclick="confirmarBloqueio()">BLOQUEAR DATA</button>
+        </div>
+        <div id="area-desbloquear" style="display:none;">
+            <p style="color:var(--danger); font-weight:bold; margin-bottom:15px; text-align:center;">DATA BLOQUEADA</p>
+            <button class="btn" style="width:100%; border:2px solid var(--success); color:var(--success);" onclick="desbloquearData()">DESBLOQUEAR</button>
+        </div>
+        <button class="btn" style="width:100%; margin-top:10px; border: 1px solid rgba(0,0,0,0.1);" onclick="closeModal('modalBloqueio')">Cancelar</button>
+    </div>
+</div>
+ <script>
+// ==========================================
+// BLOCO 1: API CLOUD, LÓGICA GERAL E CORREÇÕES
+// ==========================================
+const CloudAPI = {
+    getDados: async () => JSON.parse(localStorage.getItem('fisiov_jack_GOLD_V9_FASE3')) || JSON.parse(localStorage.getItem('fisiov_jack_GOLD_V9_FASE2')) || JSON.parse(localStorage.getItem('fisiov_jack_GOLD_V8')) || {},
+    setDados: async (data) => localStorage.setItem('fisiov_jack_GOLD_V9_FASE3', JSON.stringify(data)),
+    
+    salvarPaciente: async (pacienteObj) => {
+        let dados = await CloudAPI.getDados();
+        if(!dados.pacientes) dados.pacientes = [];
+        if(pacienteObj.cpf) {
+            const cpfExiste = dados.pacientes.find(x => x.cpf === pacienteObj.cpf && x.id !== pacienteObj.id);
+            if(cpfExiste) throw new Error("ERRO_CPF_DUPLICADO");
+        }
+        const idx = dados.pacientes.findIndex(x => x.id === pacienteObj.id);
+        if(idx >= 0) dados.pacientes[idx] = pacienteObj; else dados.pacientes.push(pacienteObj);
+        await CloudAPI.setDados(dados);
+        return true;
+    },
+    
+    salvarFinanceiro: async (finObj) => {
+        let dados = await CloudAPI.getDados();
+        if(!dados.financeiro) dados.financeiro = [];
+        if(finObj.valor <= 0 || isNaN(finObj.valor)) throw new Error("ERRO_VALOR_INVALIDO");
+        
+        // Garante que todo lançamento tenha um ID único
+        if (!finObj.id) finObj.id = 'FIN_' + Date.now().toString() + Math.random().toString(36).substr(2, 5);
+        
+        const idx = dados.financeiro.findIndex(x => x.id === finObj.id);
+        if(idx >= 0) dados.financeiro[idx] = finObj; else dados.financeiro.push(finObj);
+        await CloudAPI.setDados(dados);
+        return true;
+    },
+    
+    salvarAgendamento: async (evtObj) => {
+        let dados = await CloudAPI.getDados();
+        if(!dados.agenda) dados.agenda = [];
+        const dataAgendada = new Date(evtObj.data + 'T' + evtObj.hora);
+        const agora = new Date();
+        if (dataAgendada < agora && !evtObj.id) { throw new Error("ERRO_DATA_PASSADA"); }
+        if(evtObj.horaFim && evtObj.horaFim <= evtObj.hora) { throw new Error("ERRO_HORA_FIM_MENOR"); }
+        const idx = dados.agenda.findIndex(x => x.id === evtObj.id);
+        if(idx >= 0) dados.agenda[idx] = evtObj; else dados.agenda.push(evtObj);
+        await CloudAPI.setDados(dados);
+        return true;
+    },
+
+    salvarEvolucao: async (evoObj) => {
+        let dados = await CloudAPI.getDados();
+        if(!dados.evolucoes) dados.evolucoes = [];
+        if(evoObj.id && dados.evolucoes.some(e => e.id === evoObj.id)) {
+            throw new Error("BLINDAGEM_CREFITO: Edição estritamente proibida no banco de dados.");
+        }
+        evoObj.id = Date.now().toString(); 
+        dados.evolucoes.push(evoObj);
+        await CloudAPI.setDados(dados);
+        return true;
+    }
+};
+
+let db = {};
+let licenca = JSON.parse(localStorage.getItem('elluz_license_v1')) || null;
+let filtroFinMes = new Date().getMonth();
+let filtroFinAno = new Date().getFullYear();
+let agendaView = 'dia'; 
+let dashView = 'dia'; 
+let agendaDate = new Date();
+let paginaAtualPacientes = 1;
+const ITENS_POR_PAGINA = 50;
+
+// BLINDAGEM DE FUSO HORÁRIO (FASE 3)
+function getSafeDateISO(date) { 
+    const offset = date.getTimezoneOffset(); 
+    const local = new Date(date.getTime() - (offset * 60 * 1000)); 
+    return local.toISOString().split('T')[0]; 
+}
+
+async function initApp() {
+    db = await CloudAPI.getDados();
+    db.pass = db.pass || "1234";
+    db.servicos = db.servicos || [{nome:"Fisioterapia",cor:"#3A5A48"},{nome:"Pilates",cor:"#5D8A45"}];
+    db.pacientes = db.pacientes || [];
+    db.evolucoes = db.evolucoes || [];
+    db.financeiro = db.financeiro || [];
+
+    // BACKLOG: Rotina de Retroatividade Segura para o Financeiro
+    let migrouFin = false;
+    db.financeiro.forEach(f => {
+        if (!f.id) {
+            f.id = 'FIN_' + Date.now().toString() + Math.random().toString(36).substr(2, 5);
+            migrouFin = true;
+        }
+    });
+    if (migrouFin) await CloudAPI.setDados(db);
+    
+    db.agenda = db.agenda || [];
+    db.anamneses = db.anamneses || {}; 
+    db.tema = db.tema || "padrao";
+    db.bloqueios = db.bloqueios || []; 
+    db.galeria = db.galeria || {}; // FASE 3: Galeria
+    db.config = db.config || { logoBase64: '' }; // FASE 3: Logo Customizada
+    
+    if(db.pacientes.length > 0) {
+        let migrou = false;
+        db.evolucoes.forEach(e => { if(!e.pacienteId && e.paciente) { const p = db.pacientes.find(x => x.nome === e.paciente); if(p) { e.pacienteId = p.id; migrou = true; } } });
+        db.agenda.forEach(a => { if(!a.pacienteId && a.paciente) { const p = db.pacientes.find(x => x.nome === a.paciente); if(p) { a.pacienteId = p.id; migrou = true; } } });
+        if(migrou) CloudAPI.setDados(db);
+    }
+    
+    popularAnosFinanceiro();
+    const selMes = document.getElementById('fin-filtro-mes');
+    if(selMes) selMes.value = filtroFinMes;
+    
+    verificarLicenca();
+    aplicarTema(db.tema);
+    carregarLogoConfig(); // FASE 3
+    atualizarUI();
+    setInterval(atualizarRelogio, 1000);
+    atualizarRelogio();
+}
+document.addEventListener('DOMContentLoaded', initApp);
+
+function atualizarRelogio() { 
+    const now = new Date(); 
+    const h = String(now.getHours()).padStart(2, '0'); 
+    const m = String(now.getMinutes()).padStart(2, '0'); 
+    document.getElementById('relogio').innerText = `${h}:${m}`; 
+}
+
+const paletas={
+    padrao:{body:'#F5F7F5',side:'#2C4A3B',card:'rgba(255, 255, 255, 0.70)',input:'rgba(255, 255, 255, 0.90)',acc:'#3A5A48',dark:'#1E3325',main:'#333D36'},
+    elegante:{body:'#F5F2EB',side:'#EBE5DE',card:'#ffffff',input:'#FCFCFC',acc:'#C5B4A5',dark:'#9C897B',main:'#5D4E46'},
+    noturno:{body:'#121212',side:'#1c1c1e',card:'rgba(255, 255, 255, 0.05)',input:'rgba(255, 255, 255, 0.1)',acc:'#C5A059',dark:'#A38047',main:'#F5F5F5'},
+    azul:{body:'#eff6ff',side:'#dbeafe',card:'#ffffff',input:'#f1f8ff',acc:'#3b82f6',dark:'#1e40af',main:'#1e3a8a'},
+    lavanda:{body:'#faf5ff',side:'#f3e8ff',card:'#ffffff',input:'#fdfbfd',acc:'#a855f7',dark:'#7e22ce',main:'#581c87'}
+};
+
+function maskCPF(i){ let v=i.value.replace(/\D/g,""); v=v.replace(/(\d{3})(\d)/,"$1.$2"); v=v.replace(/(\d{3})(\d)/,"$1.$2"); v=v.replace(/(\d{3})(\d{1,2})$/,"$1-$2"); i.value=v; }
+function maskPhone(i){ let v=i.value.replace(/\D/g,""); v=v.replace(/^(\d{2})(\d)/g,"($1) $2"); v=v.replace(/(\d)(\d{4})$/,"$1-$2"); i.value=v; }
+function maskCurrency(i){ let v=i.value.replace(/\D/g,""); v=(v/100).toFixed(2)+''; v=v.replace(".", ","); v=v.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1."); i.value=v; }
+
+let confirmCallback = null;
+function customConfirm(msg, callback) { document.getElementById('confirm-msg').innerText = msg; confirmCallback = callback; openModal('modalConfirm'); }
+document.getElementById('btn-confirm-yes').onclick = () => { closeModal('modalConfirm'); if(confirmCallback) confirmCallback(); };
+function showToast(msg, type='success') { const container = document.getElementById('toast-container'); const toast = document.createElement('div'); toast.className = `toast ${type === 'error' ? 'toast-error' : ''}`; toast.innerHTML = `<i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i> ${msg}`; container.appendChild(toast); setTimeout(() => { toast.classList.add('fadeOut'); setTimeout(() => toast.remove(), 400); }, 3000); }
+function formatarDataBR(dataString) { if (!dataString) return '-'; let cleanData = dataString.split('T')[0]; let parts = cleanData.split('-'); if(parts.length === 3) { return `${parts[2]}/${parts[1]}/${parts[0]}`; } return dataString; }
+
+async function buscarCEP(cep) {
+    const cleanCep = cep.replace(/\D/g, ''); if(cleanCep.length !== 8) return;
+    try { const res = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`); const data = await res.json();
+        if(!data.erro) { document.getElementById('p-end').value = `${data.logradouro}, Número, ${data.bairro}, ${data.localidade} - ${data.uf}`; showToast("Endereço autocompletado!", "success"); } 
+        else { showToast("CEP não encontrado.", "error"); }
+    } catch(e) { showToast("Erro ao buscar CEP", "error"); }
+}
+
+function verificarLicenca(){ if(!licenca){ document.getElementById('modalLicenca').style.display='flex'; } else { aplicarDadosLicenca(); } }
+function ativarLicenca(){ const nome = document.getElementById('lic-nome').value.trim(); const crefito = document.getElementById('lic-crefito').value.trim(); if(!nome || !crefito){ showToast("Preencha todos os dados.", "error"); return; } licenca = { nome, crefito, profissao: "Fisioterapeuta" }; localStorage.setItem('elluz_license_v1', JSON.stringify(licenca)); document.getElementById('modalLicenca').style.display='none'; showToast("Bem-vinda(o)! Senha padrão: 1234"); aplicarDadosLicenca(); }
+function aplicarDadosLicenca(){ if(!licenca) return; const elsNome = ['lbl-login-nome','lbl-side-nome']; elsNome.forEach(id => { const el=document.getElementById(id); if(el) el.innerText = licenca.nome; }); const elsCrefito = ['lbl-login-crefito','lbl-side-crefito']; elsCrefito.forEach(id => { const el=document.getElementById(id); if(el) el.innerText = licenca.crefito; }); const footer = document.getElementById('footer-lgpd'); if(footer) footer.innerHTML = `<i class="fas fa-shield-alt"></i> SISTEMA SEGURO (LGPD) – ${licenca.nome.toUpperCase()} ${licenca.crefito.toUpperCase()}`; }
+function checkLogin(){ if(document.getElementById('pass-input').value === db.pass) document.getElementById('login-screen').style.display='none'; else showToast("Senha incorreta!", "error"); }
+
+function aplicarTema(nome){
+    const p = paletas[nome] || paletas['padrao']; const r = document.documentElement;
+    Object.keys(p).forEach(key => { let cssVar = '--'+key; if(key==='card') cssVar='--card-bg'; if(key==='input') cssVar='--input-bg'; if(key==='acc') cssVar='--accent'; if(key==='dark') cssVar='--accent-dark'; if(key==='main') cssVar='--text-main'; if(key==='body') cssVar='--bg-body'; if(key==='side') cssVar='--sidebar-bg'; r.style.setProperty(cssVar, p[key]); });
+    db.tema = nome; CloudAPI.setDados(db);
+    const sidebarHeaders = document.querySelectorAll('.sidebar-header h3'); const navItems = document.querySelectorAll('.nav-item');
+    if(nome === 'padrao') { sidebarHeaders.forEach(el => el.style.color = '#ffffff'); navItems.forEach(el => el.style.color = 'rgba(255,255,255,0.8)'); } 
+    else { sidebarHeaders.forEach(el => el.style.color = 'var(--text-main)'); navItems.forEach(el => el.style.color = 'var(--text-main)'); }
+}
+
+function showTab(id){
+    document.querySelectorAll('.tab-content').forEach(t => { t.classList.remove('active'); t.style.display = 'none'; }); 
+    document.querySelectorAll('.nav-item').forEach(n => { n.classList.remove('active'); });
+    
+    document.querySelectorAll('.select-paciente').forEach(sel => sel.value = '');
+    const targetTab = document.getElementById(id); 
+    if(targetTab) { 
+        targetTab.style.display = 'block'; 
+        // CORREÇÃO: Removemos o atraso. A aba ativa e calcula imediatamente.
+        targetTab.classList.add('active'); 
+    }
+    const menuMap = { 'dashboard': 'Início', 'agenda': 'Agenda', 'pacientes': 'Pacientes', 'prontuario': 'Prontuários', 'anamnese': 'Anamnese', 'recibos': 'Recibos', 'financeiro': 'Financeiro', 'config': 'Configurações' };
+    const labelProcurado = menuMap[id]; 
+    document.querySelectorAll('.nav-item').forEach(nav => { if(nav.innerText.trim().includes(labelProcurado)) nav.classList.add('active'); });
+    if(window.innerWidth <= 768) { const sb = document.querySelector('.sidebar'); if(sb.classList.contains('open')) toggleMenuMobile(); }
+    
+    if(id === 'pacientes') atualizarUIPacientes(1); 
+    else atualizarUI(); 
+}
+        
+// BACKLOG: Otimização de Performance para 1000+ Pacientes
+let cacheOpcoesPacientes = "";
+let qtdPacientesCache = -1;
+
+function popularSelectsPacientes() {
+    // Só recalcula a lista se a quantidade de pacientes mudar
+    if (db.pacientes.length !== qtdPacientesCache) {
+        db.pacientes.sort((a, b) => a.nome.localeCompare(b.nome));
+        cacheOpcoesPacientes = db.pacientes.map(p => `<option value="${p.id}">${p.nome} ${p.cpf ? `(${p.cpf})` : ''}</option>`).join('');
+        qtdPacientesCache = db.pacientes.length;
+    }
+
+    const optionAvulso = '<option value="">Avulso / Outro (Digitar Nome)...</option>';
+    const optionPadrao = '<option value="">Selecione um paciente...</option>';
+    
+    document.querySelectorAll('.select-paciente').forEach(select => {
+        const val = select.value; 
+        if(select.id === 'ag-paciente-select') select.innerHTML = optionAvulso + cacheOpcoesPacientes;
+        else if(select.id === 'f-paciente') select.innerHTML = '<option value="">Nenhum / Não vinculado</option>' + cacheOpcoesPacientes;
+        else select.innerHTML = optionPadrao + cacheOpcoesPacientes;
+        select.value = val; 
+    });
+}
+        
+    // ==========================================
+// BLOCO 2: FUNCIONALIDADES PREMIUM FASE 3
+// ==========================================
+
+// --- PAGINAÇÃO E MENSAGERIA DE PACIENTES ---
+function atualizarUIPacientes(pagina = paginaAtualPacientes) {
+    paginaAtualPacientes = pagina;
+    const tbodyPac = document.getElementById('tbody-pacientes');
+    const containerPagination = document.getElementById('pacientes-pagination');
+    const termoBusca = document.getElementById('busca-paciente')?.value.toLowerCase() || '';
+    
+    if (!tbodyPac) return;
+
+    let pacientesFiltrados = db.pacientes.filter(p => 
+        p.nome.toLowerCase().includes(termoBusca) || (p.cpf && p.cpf.includes(termoBusca))
+    );
+    
+    // Lógica de Paginação
+    const totalPaginas = Math.ceil(pacientesFiltrados.length / ITENS_POR_PAGINA);
+    const inicio = (paginaAtualPacientes - 1) * ITENS_POR_PAGINA;
+    const fim = inicio + ITENS_POR_PAGINA;
+    const pacientesPagina = pacientesFiltrados.slice(inicio, fim);
+
+    if (pacientesFiltrados.length === 0) {
+        tbodyPac.innerHTML = `
+            <tr>
+                <td colspan="4">
+                    <div class="empty-state">
+                        <i class="fas fa-users"></i>
+                        <p>Nenhum paciente encontrado.</p>
+                    </div>
+                </td>
+            </tr>`;
+        containerPagination.innerHTML = '';
+        return;
+    }
+
+    tbodyPac.innerHTML = pacientesPagina.map((p, i) => {
+        const idxOriginal = db.pacientes.findIndex(x => x.id === p.id);
+        const numeroLimpo = p.tel ? p.tel.replace(/\D/g, '') : '';
+        const linkWpp = numeroLimpo ? `https://wa.me/55${numeroLimpo}` : '#';
+        const clickBloqueio = numeroLimpo ? '' : `onclick="showToast('Telefone não cadastrado!', 'error'); event.preventDefault();"`;
+        
+        // Mensageria Inteligente Fase 3
+        const btnAniversario = `<a href="${numeroLimpo ? linkWpp + '?text=Ol%C3%A1%20' + p.nome.split(' ')[0] + '!%20Feliz%20anivers%C3%A1rio!%20Te%20desejo%20muita%20sa%C3%BAde%20e%20paz.%20Um%20abra%C3%A7o%20da%20cl%C3%ADnica!' : '#'}" target="_blank" class="btn-action" title="Feliz Aniversário" style="background:#FEF3C7; color:#D97706;" ${clickBloqueio}><i class="fas fa-birthday-cake"></i></a>`;
+        
+        const btnCobranca = `<a href="${numeroLimpo ? linkWpp + '?text=Ol%C3%A1%20' + p.nome.split(' ')[0] + '!%20Tudo%20bem?%20Passando%20para%20lembrar%20do%20vencimento%20da%20nossa%20mensalidade%2Fpacote.%20Qualquer%20d%C3%BAvida%20estou%20%C3%A0%20disposi%C3%A7%C3%A3o!' : '#'}" target="_blank" class="btn-action" title="Lembrete de Pagamento" style="background:#FEE2E2; color:#DC2626;" ${clickBloqueio}><i class="fas fa-file-invoice-dollar"></i></a>`;
+        
+        const btnRenovacao = `<a href="${numeroLimpo ? linkWpp + '?text=Ol%C3%A1%20' + p.nome.split(' ')[0] + '!%20Seu%20pacote%20de%20sess%C3%B5es%20est%C3%A1%20chegando%20ao%20fim.%20Vamos%20j%C3%A1%20deixar%20renovado%20para%20n%C3%A3o%20perder%20o%20seu%20hor%C3%A1rio%3F' : '#'}" target="_blank" class="btn-action" title="Renovar Pacote" style="background:#DCFCE7; color:#16A34A;" ${clickBloqueio}><i class="fas fa-sync-alt"></i></a>`;
+
+        return `
+            <tr>
+                <td><strong>${p.nome}</strong></td>
+                <td>${formatarDataBR(p.nasc)}</td>
+                <td>
+                    <div style="display:flex; gap:5px;">
+                        <a href="${linkWpp}" target="_blank" class="btn-action" style="background:#25D366; color:white;" title="Abrir WhatsApp" ${clickBloqueio}>
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                        ${btnAniversario}
+                        ${btnCobranca}
+                        ${btnRenovacao}
+                    </div>
+                </td>
+                <td style="text-align:right">
+                    <button class="btn-action" onclick="gerarTermoLGPD('${p.id}')" title="Termo de Consentimento LGPD" style="background:var(--accent-dark); color:white;">
+                        <i class="fas fa-file-contract"></i>
+                    </button>
+                    <button class="btn-action" onclick="openModal('modalPacienteNovo',${idxOriginal})" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-action" onclick="abrirModalExclusaoPaciente('${p.id}', '${p.nome}')" title="Excluir">
+                        <i class="fas fa-trash" style="color:var(--danger)"></i>
+                    </button>
+                </td>
+            </tr>`;
+    }).join('');
+
+    // Renderizar Botões de Paginação
+    if (totalPaginas > 1) {
+        let btnHtml = `<button class="page-btn" ${paginaAtualPacientes === 1 ? 'disabled' : ''} onclick="atualizarUIPacientes(${paginaAtualPacientes - 1})"><i class="fas fa-chevron-left"></i></button>`;
+        btnHtml += `<span style="font-size:0.8rem; font-weight:bold; color:var(--text-light); margin: 0 10px;">Página ${paginaAtualPacientes} de ${totalPaginas}</span>`;
+        btnHtml += `<button class="page-btn" ${paginaAtualPacientes === totalPaginas ? 'disabled' : ''} onclick="atualizarUIPacientes(${paginaAtualPacientes + 1})"><i class="fas fa-chevron-right"></i></button>`;
+        containerPagination.innerHTML = btnHtml;
+    } else {
+        containerPagination.innerHTML = '';
+    }
+}
+
+// --- TERMO DE CONSENTIMENTO LGPD (FASE 3) ---
+function gerarTermoLGPD(pacienteId) {
+    const p = db.pacientes.find(x => x.id === pacienteId);
+    if (!p) return;
+
+    const { jsPDF } = window.jspdf; 
+    const doc = new jsPDF(); 
+    
+    // Injetar Logo se existir
+    if (db.config.logoBase64) {
+        try { 
+            doc.addImage(db.config.logoBase64, 'PNG', 14, 10, 30, 30, '', 'FAST'); 
+        } catch(e) { 
+            console.log("Erro ao injetar logo no PDF"); 
+        }
+    }
+
+    doc.setFillColor(44, 74, 59); 
+    doc.rect(0, 45, 210, 10, 'F'); 
+    
+    doc.setTextColor(255, 255, 255); 
+    doc.setFont("helvetica", "bold"); 
+    doc.setFontSize(14); 
+    doc.text("TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO (LGPD)", 105, 52, { align: "center" }); 
+    
+    doc.setTextColor(51, 61, 54); 
+    doc.setFontSize(10); 
+    doc.setFont("helvetica", "normal");
+    
+    const textoTermo = `
+Eu, ${p.nome}, portador(a) do CPF ${p.cpf || '__________________'}, residente em ${p.end || '__________________________________________'}, autorizo a(o) profissional ${licenca ? licenca.nome : '__________________'}, inscrita(o) no ${licenca ? licenca.crefito : '__________________'}, a realizar a coleta, armazenamento e tratamento dos meus dados pessoais e sensíveis (dados de saúde, prontuários, evolução clínica e avaliações) necessários para o acompanhamento e tratamento fisioterapêutico.
+
+Declaro estar ciente de que:
+1. Meus dados serão armazenados de forma segura e utilizados estritamente para fins de saúde, acompanhamento clínico e contato.
+2. Posso solicitar a qualquer momento a visualização, alteração ou exclusão dos meus dados cadastrais, respeitando os limites legais de guarda de prontuários médicos/fisioterapêuticos estipulados pelo COFFITO.
+3. Este consentimento está em conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018).
+
+Autorizo também o envio de mensagens (WhatsApp/SMS) com finalidade exclusiva de lembretes de agendamentos, orientações em saúde e assuntos financeiros diretamente ligados ao meu tratamento.
+`;
+
+    const linhas = doc.splitTextToSize(textoTermo.trim(), 180);
+    doc.text(linhas, 14, 65);
+
+    doc.setDrawColor(44, 74, 59); 
+    doc.line(40, 170, 170, 170); 
+    doc.setFontSize(10); 
+    doc.text("Assinatura do Paciente", 105, 176, { align: "center" }); 
+    doc.text(`Local e Data: ________________________, ____/____/________`, 105, 190, { align: "center" }); 
+    
+    doc.save(`LGPD_${p.nome.replace(/\s+/g, '_')}.pdf`); 
+    showToast("Termo LGPD Gerado com Sucesso!");
+}
+
+// --- LOGO CUSTOMIZADA DA CLÍNICA (FASE 3) ---
+function carregarLogoConfig() {
+    if (db.config.logoBase64) {
+        document.getElementById('img-logo-preview').src = db.config.logoBase64;
+        document.getElementById('img-logo-preview').style.display = 'block';
+        document.getElementById('icone-logo-vazia').style.display = 'none';
+    }
+}
+
+function salvarLogo(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (file.size > 1024 * 1024) return showToast("A logo deve ter no máximo 1MB.", "error");
+
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+        db.config.logoBase64 = e.target.result;
+        await CloudAPI.setDados(db);
+        carregarLogoConfig();
+        showToast("Logo atualizada! Será usada nos próximos PDFs.");
+    };
+    reader.readAsDataURL(file);
+}
+
+function removerLogo() {
+    db.config.logoBase64 = '';
+    CloudAPI.setDados(db);
+    document.getElementById('img-logo-preview').style.display = 'none';
+    document.getElementById('icone-logo-vazia').style.display = 'block';
+    document.getElementById('upload-logo').value = '';
+    showToast("Logo removida.");
+}
+
+// --- GALERIA CLÍNICA NO PRONTUÁRIO (FASE 3) ---
+function renderizarProntuarioTela() {
+    const pacienteId = document.getElementById('pdf-paciente-select').value;
+    const containerLista = document.getElementById('prontuario-tela-lista');
+    const containerGaleria = document.getElementById('area-galeria');
+    const galeriaGrid = document.getElementById('prontuario-galeria');
+    
+    if (!pacienteId) { 
+        containerLista.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-notes-medical"></i>
+                <p>Selecione um paciente cadastrado para ver o histórico blindado.</p>
+            </div>`; 
+        containerGaleria.style.display = 'none';
+        return; 
+    }
+
+    // Renderizar Galeria
+    const fotos = db.galeria[pacienteId] || [];
+    if (fotos.length > 0) {
+        containerGaleria.style.display = 'block';
+        galeriaGrid.innerHTML = fotos.map((fotoBase64, index) => `
+            <div class="gallery-item">
+                <img src="${fotoBase64}" onclick="window.open('${fotoBase64}', '_blank')" title="Clique para ampliar">
+                <button class="delete-btn" onclick="excluirFotoGaleria('${pacienteId}', ${index})" title="Excluir">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `).join('');
+    } else {
+        containerGaleria.style.display = 'none';
+        galeriaGrid.innerHTML = '';
+    }
+
+    // Renderizar Linha do Tempo
+    const evolucoes = db.evolucoes.filter(e => e.pacienteId === pacienteId).map(e => ({ 
+        tipo: 'Evolução', 
+        dataStr: e.data, 
+        texto: e.texto, 
+        timestamp: e.timestamp 
+    }));
+    
+    const anamneses = (db.anamneses[pacienteId] || []).map(a => ({ 
+        tipo: 'Avaliação Inicial', 
+        dataStr: a.data, 
+        texto: a.queixa ? `Queixa Principal: ${a.queixa}\nConduta: ${a.plano||'-'}` : 'Avaliação realizada', 
+        timestamp: a.timestamp 
+    }));
+
+    const combinados = [...evolucoes, ...anamneses].sort((a,b) => {
+        const timeA = a.timestamp || parseBRDate(a.dataStr);
+        const timeB = b.timestamp || parseBRDate(b.dataStr);
+        return timeB - timeA;
+    });
+
+    if (combinados.length === 0) { 
+        containerLista.innerHTML = '<div class="empty-state"><p>Nenhum registro de texto encontrado.</p></div>'; 
+        return; 
+    }
+
+    containerLista.innerHTML = combinados.map(item => `
+        <div style="border-left: 4px solid var(--accent); background: rgba(0,0,0,0.02); padding: 15px; margin-bottom: 10px; border-radius: 0 10px 10px 0;">
+            <div style="display:flex; justify-content:space-between; margin-bottom: 8px;">
+                <strong style="color:var(--accent);">
+                    <i class="fas ${item.tipo === 'Evolução' ? 'fa-lock' : 'fa-clipboard-list'}" ${item.tipo === 'Evolução' ? 'title="Registro Bloqueado" style="color:var(--danger);"' : ''}></i> ${item.tipo}
+                </strong>
+                <span style="font-size: 0.8rem; color: var(--text-light); font-weight: bold;">
+                    <i class="far fa-clock"></i> ${item.dataStr}
+                </span>
+            </div>
+            <p style="font-size:0.9rem; line-height: 1.5; color: var(--text-main); white-space: pre-wrap;">${item.texto}</p>
+        </div>
+    `).join('');
+}
+
+function salvarFotoGaleria(event) {
+    const pacienteId = document.getElementById('pdf-paciente-select').value;
+    if (!pacienteId) {
+        document.getElementById('upload-galeria').value = '';
+        return showToast("Selecione um paciente antes de anexar fotos.", "error");
+    }
+
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    // Comprimir e converter a imagem antes de salvar para não explodir o LocalStorage
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = new Image();
+        img.src = e.target.result;
+        img.onload = async function() {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 800;
+            const MAX_HEIGHT = 800;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) { 
+                if (width > MAX_WIDTH) { 
+                    height *= MAX_WIDTH / width; width = MAX_WIDTH; 
+                } 
+            } else { 
+                if (height > MAX_HEIGHT) { 
+                    width *= MAX_HEIGHT / height; height = MAX_HEIGHT; 
+                } 
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            const dataUrlAjustada = canvas.toDataURL('image/jpeg', 0.4); // Qualidade 40% (Otimização Storage)
+
+            if (!db.galeria[pacienteId]) db.galeria[pacienteId] = [];
+            db.galeria[pacienteId].push(dataUrlAjustada);
+            
+            await CloudAPI.setDados(db);
+            renderizarProntuarioTela();
+            showToast("Foto salva com sucesso na galeria!");
+        }
+    };
+    reader.readAsDataURL(file);
+    document.getElementById('upload-galeria').value = '';
+}
+
+async function excluirFotoGaleria(pacienteId, index) {
+    customConfirm("Deseja apagar esta foto?", async () => {
+        db.galeria[pacienteId].splice(index, 1);
+        await CloudAPI.setDados(db);
+        renderizarProntuarioTela();
+        showToast("Foto excluída da galeria.");
+    });
+}
+// Ajuste para injetar Logo no PDF Completo
+function gerarPDFCompleto() { 
+    const pacienteId = document.getElementById('pdf-paciente-select').value; 
+    if (!pacienteId) return showToast("Selecione um paciente na aba Prontuários.", "error"); 
+    
+    const p = db.pacientes.find(x => x.id === pacienteId); 
+    if (!p) return showToast("Paciente não cadastrado no banco.", "error"); 
+    
+    const { jsPDF } = window.jspdf; 
+    const doc = new jsPDF(); 
+    
+    doc.setFillColor(44, 74, 59); 
+    doc.rect(0, 0, 210, 45, 'F'); 
+    
+    // Injetar Logo no Cabeçalho
+    if (db.config.logoBase64) {
+        try { 
+            doc.addImage(db.config.logoBase64, 'PNG', 160, 5, 35, 35, '', 'FAST'); 
+        } catch(e) {}
+    }
+
+    doc.setTextColor(255, 255, 255); 
+    doc.setFont("helvetica", "bold"); 
+    doc.setFontSize(22); 
+    doc.text("PRONTUÁRIO CLÍNICO", 14, 22); 
+    
+    doc.setFont("helvetica", "normal"); 
+    doc.setFontSize(10); 
+    doc.text(`Profissional: ${licenca ? licenca.nome : 'Fisioterapeuta'}`, 14, 30); 
+    doc.text(`Registro: ${licenca ? licenca.crefito : 'CREFITO não informado'}`, 14, 36); 
+    doc.text(`Data de Emissão: ${new Date().toLocaleDateString()}`, 100, 36); 
+    
+    doc.setTextColor(51, 61, 54); 
+    doc.setFontSize(12); 
+    doc.setFont("helvetica", "bold"); 
+    doc.text("DADOS DO PACIENTE", 14, 58); 
+    
+    doc.setFontSize(10); 
+    doc.setFont("helvetica", "normal"); 
+    doc.text(`Nome: ${p.nome}`, 14, 66); 
+    doc.text(`Nascimento: ${formatarDataBR(p.nasc) || 'N/I'}`, 130, 66); 
+    doc.text(`CPF: ${p.cpf || 'N/I'}`, 14, 72); 
+    doc.text(`Telefone: ${p.tel || 'N/I'}`, 130, 72); 
+    
+    doc.setDrawColor(197, 160, 89); 
+    doc.line(14, 78, 196, 78); 
+    
+    const evolucoes = db.evolucoes.filter(e => e.pacienteId === p.id).map(e => ({ 
+        tipo: 'Evolução', 
+        dataStr: e.data, 
+        texto: e.texto, 
+        timestamp: e.timestamp 
+    }));
+    
+    const anamneses = (db.anamneses[p.id] || []).map(a => ({ 
+        tipo: 'Avaliação Inicial', 
+        dataStr: a.data, 
+        texto: a.queixa ? `Queixa: ${a.queixa}\nConduta: ${a.plano||'-'}` : 'Avaliação realizada', 
+        timestamp: a.timestamp 
+    }));
+    
+    const combinados = [...evolucoes, ...anamneses].sort((a,b) => 
+        (b.timestamp || parseBRDate(b.dataStr)) - (a.timestamp || parseBRDate(a.dataStr))
+    );
+
+    doc.setFontSize(12); 
+    doc.setFont("helvetica", "bold"); 
+    doc.text("HISTÓRICO DE EVOLUÇÕES E AVALIAÇÕES", 14, 90); 
+    
+    if (combinados.length > 0) { 
+        const bodyEvolucoes = combinados.map(e => [ e.dataStr, e.texto ]); 
+        doc.autoTable({ 
+            startY: 95, 
+            head: [['Data', 'Descrição do Atendimento']], 
+            body: bodyEvolucoes, 
+            theme: 'striped', 
+            headStyles: { fillColor: [44, 74, 59], textColor: [255,255,255] }, 
+            alternateRowStyles: { fillColor: [245, 247, 245] }, 
+            styles: { fontSize: 9, cellPadding: 5, overflow: 'linebreak' }, 
+            columnStyles: { 0: { cellWidth: 35 }, 1: { cellWidth: 145 } }, 
+            margin: { bottom: 20 } 
+        }); 
+    } else { 
+        doc.setFont("helvetica", "italic"); 
+        doc.setFontSize(10); 
+        doc.text("Nenhuma evolução ou avaliação registrada até o momento.", 14, 98); 
+    } 
+    
+    const pageCount = doc.internal.getNumberOfPages(); 
+    for (let i = 1; i <= pageCount; i++) { 
+        doc.setPage(i); 
+        doc.setFontSize(8); 
+        doc.setTextColor(150); 
+        doc.text(`Documento gerado digitalmente | Página ${i} de ${pageCount}`, 14, 285); 
+    } 
+    doc.save(`Prontuario_${p.nome.replace(/\s+/g, '_')}.pdf`); 
+    showToast("PDF gerado com sucesso!"); 
+}
+
+
+// ==========================================
+// FUNÇÕES RESTANTES E UPDATES MANTIDOS
+// ==========================================
+
+function atualizarUIDashboard() {
+    const divGrowth = document.getElementById('metricas-crescimento');
+    if (divGrowth) {
+        let rec = 0, recAnt = 0, recAtual = 0;
+        const hoje = new Date(); 
+        const mesAtual = hoje.getMonth(); 
+        const anoAtual = hoje.getFullYear(); 
+        const mesAnterior = mesAtual === 0 ? 11 : mesAtual - 1; 
+        const anoAnterior = mesAtual === 0 ? anoAtual - 1 : anoAtual;
+        
+        db.financeiro.forEach(f => {
+            const d = new Date(f.data + "T12:00:00"); // Trava Fuso Horário
+            if (f.tipo === 'entrada') { 
+                if (d.getMonth() === mesAtual && d.getFullYear() === anoAtual) recAtual += parseFloat(f.valor); 
+                if (d.getMonth() === mesAnterior && d.getFullYear() === anoAnterior) recAnt += parseFloat(f.valor); 
+            }
+        });
+        
+        let labelCrescimento = "0%"; 
+        let colorCrescimento = "var(--text-light)"; 
+        let iconCrescimento = "fa-minus";
+        
+        if (recAnt > 0) { 
+            let tx = ((recAtual - recAnt) / recAnt) * 100; 
+            labelCrescimento = `${tx > 0 ? '+' : ''}${tx.toFixed(1)}%`; 
+            if (tx > 0) { 
+                colorCrescimento = "var(--success)"; 
+                iconCrescimento = "fa-arrow-up"; 
+            } else if (tx < 0) { 
+                colorCrescimento = "var(--danger)"; 
+                iconCrescimento = "fa-arrow-down"; 
+            } 
+        } else if (recAtual > 0) { 
+            labelCrescimento = "+100%"; 
+            colorCrescimento = "var(--success)"; 
+            iconCrescimento = "fa-arrow-up"; 
+        }
+        divGrowth.innerHTML = `<span style="font-size: 0.75rem; font-weight: 700; color: ${colorCrescimento}; display:flex; align-items:center; gap:5px;"><i class="fas ${iconCrescimento}"></i> ${labelCrescimento} vs mês passado</span>`;
+    }
+    renderAgenda('dash-calendar-container', dashView, new Date());
+    atualizarWidgetsDashboard();
+}
+
+function atualizarUIFinanceiro() {
+    filtroFinMes = parseInt(document.getElementById('fin-filtro-mes').value);
+    filtroFinAno = parseInt(document.getElementById('fin-filtro-ano').value);
+    const tbodyFin = document.getElementById('tbody-financeiro');
+    let rec = 0, desp = 0;
+    
+    const finFiltrado = db.financeiro.filter(f => { 
+        // Trava de Fuso Horário (Meio-dia) para evitar que a data volte para o mês anterior
+        const d = new Date(f.data + "T12:00:00"); 
+        return d.getMonth() === filtroFinMes && d.getFullYear() === filtroFinAno; 
+    });
+    
+    if (tbodyFin) {
+        if (finFiltrado.length === 0) {
+            tbodyFin.innerHTML = `<tr><td colspan="4"><div class="empty-state"><i class="fas fa-wallet"></i><p>Nenhum lançamento neste mês.</p></div></td></tr>`;
+        } else {
+            tbodyFin.innerHTML = finFiltrado.map(f => { 
+                const val = parseFloat(f.valor);
+                if (f.tipo === 'entrada') rec += val; 
+                else desp += val; 
+                
+                const pacText = f.pacienteId ? `<br><small style="color:var(--accent); font-weight:bold;">${db.pacientes.find(p=>p.id===f.pacienteId)?.nome || ''}</small>` : '';
+                return `
+                    <tr>
+                        <td>${formatarDataBR(f.data)}</td>
+                        <td>${f.desc}${pacText}</td>
+                        <td style="color:${f.tipo==='entrada'? 'var(--success)':'var(--danger)'}; font-weight:bold;">R$ ${val.toFixed(2)}</td>
+                        <td style="text-align:right; min-width: 90px;">
+                            <button class="btn-action" onclick="editarFin('${f.id}')" title="Editar"><i class="fas fa-edit"></i></button>
+                            <button class="btn-action" onclick="excluirFin('${f.id}')" title="Excluir"><i class="fas fa-trash" style="color:var(--danger)"></i></button>
+                        </td>
+                    </tr>`; 
+            }).join('');
+        }
+    }
+    
+    document.getElementById('fin-in').innerText = `R$ ${rec.toFixed(2)}`; 
+    document.getElementById('fin-out').innerText = `R$ ${desp.toFixed(2)}`; 
+    document.getElementById('fin-saldo').innerText = `R$ ${(rec-desp).toFixed(2)}`;
+}
+
+function atualizarUIConfig() {
+    const listaServ = document.getElementById('lista-servicos');
+    if (listaServ) {
+        listaServ.innerHTML = db.servicos.map((s,i) => `
+            <span style="background:${s.cor}; color:white; padding:6px 12px; border-radius:12px; font-size:0.8rem; font-weight:600;">
+                ${s.nome} 
+                <i class="fas fa-times" style="margin-left:5px; cursor:pointer; opacity:0.8;" onclick="customConfirm('Excluir serviço?', () => {db.servicos.splice(${i},1);CloudAPI.setDados(db).then(()=>atualizarUI());})"></i>
+            </span>
+        `).join('');
+    }
+}
+
+function atualizarUI() {
+    popularSelectsPacientes(); 
+    const activeTab = document.querySelector('.tab-content.active');
+    if (!activeTab) return;
+    
+    if (activeTab.id === 'dashboard') atualizarUIDashboard();
+    if (activeTab.id === 'pacientes') atualizarUIPacientes(paginaAtualPacientes);
+    if (activeTab.id === 'financeiro') atualizarUIFinanceiro();
+    if (activeTab.id === 'agenda') renderAgenda('agenda-calendar-container', agendaView, agendaDate);
+    if (activeTab.id === 'prontuario') renderizarProntuarioTela();
+    if (activeTab.id === 'config') atualizarUIConfig();
+}
+
+function abrirModalExclusaoPaciente(id, nome) {
+    document.getElementById('del-pac-id').value = id;
+    document.getElementById('del-pac-nome').innerText = nome;
+    document.getElementById('del-cascade').checked = false;
+    openModal('modalExcluirPaciente');
+}
+
+async function confirmarExclusaoCascata() {
+    const id = document.getElementById('del-pac-id').value;
+    const cascade = document.getElementById('del-cascade').checked;
+    
+    db.pacientes = db.pacientes.filter(p => p.id !== id);
+    
+    if (cascade) {
+        db.agenda = db.agenda.filter(a => a.pacienteId !== id);
+        db.financeiro = db.financeiro.filter(f => f.pacienteId !== id);
+        db.evolucoes = db.evolucoes.filter(e => e.pacienteId !== id);
+        delete db.anamneses[id];
+        delete db.galeria[id];
+    }
+    
+    await CloudAPI.setDados(db);
+    closeModal('modalExcluirPaciente');
+    atualizarUI();
+    showToast(cascade ? "Paciente e dados vinculados excluídos!" : "Paciente excluído (histórico mantido).");
+}
+
+async function salvarPaciente(){
+    const p = { 
+        id: document.getElementById('p-id').value || Date.now().toString(), 
+        nome: document.getElementById('p-nome').value, 
+        nasc: document.getElementById('p-nasc').value, 
+        tel: document.getElementById('p-tel').value, 
+        end: document.getElementById('p-end').value, 
+        cpf: document.getElementById('p-cpf').value, 
+        profissao: document.getElementById('p-profissao').value, 
+        civil: document.getElementById('p-civil').value, 
+        desde: document.getElementById('p-desde').value 
+    };
+    
+    if (!p.nome) return showToast("Nome do paciente é obrigatório", "error");
+    
+    try { 
+        await CloudAPI.salvarPaciente(p); 
+        db = await CloudAPI.getDados(); 
+        closeModal('modalPacienteNovo'); 
+        atualizarUI(); 
+        showToast("Paciente salvo com sucesso!"); 
+    } catch(e) { 
+        if(e.message === "ERRO_CPF_DUPLICADO") showToast("Este CPF já está cadastrado!", "error"); 
+        else showToast("Erro ao salvar paciente", "error"); 
+    }
+}
+
+async function salvarFin(){
+    const id = document.getElementById('f-id').value;
+    const desc = document.getElementById('f-desc').value; 
+    const valFloat = parseFloat(document.getElementById('f-valor').value.replace(/\./g, '').replace(',', '.'));
+    const pacId = document.getElementById('f-paciente').value;
+    const dataVal = document.getElementById('f-data').value;
+
+    // BACKLOG: Trava de Data Obrigatória
+    if (!dataVal) return showToast("A data do lançamento é estritamente obrigatória!", "error");
+    if (!desc || isNaN(valFloat)) return showToast("Preencha todos os campos corretamente", "error");
+
+    const f = { id: id, desc: desc, valor: valFloat, data: dataVal, tipo: document.getElementById('f-tipo').value, pacienteId: pacId };
+    
+    try { 
+        await CloudAPI.salvarFinanceiro(f); 
+        db = await CloudAPI.getDados(); 
+        popularAnosFinanceiro(); 
+        closeModal('modalFinanceiro'); 
+        atualizarUI(); 
+        showToast(id ? "Lançamento atualizado!" : "Lançamento registrado!"); 
+    } catch(e) { 
+        if (e.message === "ERRO_VALOR_INVALIDO") showToast("O valor deve ser maior que zero!", "error"); 
+    }
+}
+
+function editarFin(id) {
+    const f = db.financeiro.find(x => x.id === id);
+    if (!f) return;
+    document.getElementById('f-id').value = f.id;
+    document.getElementById('f-desc').value = f.desc;
+    document.getElementById('f-valor').value = f.valor.toFixed(2).replace('.', ',');
+    document.getElementById('f-data').value = f.data;
+    document.getElementById('f-tipo').value = f.tipo;
+    document.getElementById('f-paciente').value = f.pacienteId || '';
+    openModal('modalFinanceiro');
+}
+
+async function excluirFin(id) {
+    customConfirm("Excluir este lançamento financeiro definitivamente?", async () => {
+        db.financeiro = db.financeiro.filter(x => x.id !== id);
+        await CloudAPI.setDados(db);
+        atualizarUI();
+        showToast("Lançamento excluído com sucesso!");
+    });
+}
+
+function exportarFinanceiroCSV() {
+    const m = parseInt(document.getElementById('fin-filtro-mes').value);
+    const y = parseInt(document.getElementById('fin-filtro-ano').value);
+    
+    const dadosFiltrados = db.financeiro.filter(f => {
+        const d = new Date(f.data + "T12:00:00"); // Trava Fuso
+        return d.getMonth() === m && d.getFullYear() === y;
+    }).sort((a,b) => a.data.localeCompare(b.data));
+
+    if (dadosFiltrados.length === 0) return showToast("Nenhum dado para exportar.", "error");
+
+    let csv = "Data;Descricao;Paciente;Tipo;Valor(R$)\n";
+    dadosFiltrados.forEach(f => {
+        const nomePac = db.pacientes.find(p => p.id === f.pacienteId)?.nome || "Avulso/Sem Vinculo";
+        csv += `${formatarDataBR(f.data)};${f.desc};${nomePac};${f.tipo.toUpperCase()};${f.valor.toFixed(2).replace('.', ',')}\n`;
+    });
+
+    const blob = new Blob(["\uFEFF"+csv], { type: 'text/csv;charset=utf-8;' }); 
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Financeiro_${m+1}_${y}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast("CSV exportado! Envie para sua contabilidade.");
+}
+
+async function salvarEvolucao(){
+    const pacId = document.getElementById('ev-paciente').value; 
+    const texto = document.getElementById('ev-texto').value;
+    
+    if (!pacId || !texto) return showToast("Selecione o paciente e digite a evolução", "error");
+    
+    const evoObj = { 
+        pacienteId: pacId, 
+        texto: texto, 
+        data: new Date().toLocaleDateString('pt-BR') + ' ' + new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}), 
+        timestamp: Date.now() 
+    };
+    
+    try {
+        await CloudAPI.salvarEvolucao(evoObj);
+        db = await CloudAPI.getDados();
+        closeModal('modalEvolucao'); 
+        atualizarUI(); 
+        showToast("Evolução salva e blindada!");
+    } catch(e) {
+        showToast(e.message, "error");
+    }
+}
+
+function openModal(id, idx=null){
+    if (id === 'modalEvolucao' && db.pacientes.length === 0) {
+        showToast("Cadastre pelo menos um paciente primeiro.", "error"); 
+        return;
+    }
+    
+    document.getElementById(id).style.display = 'flex';
+    
+    if (id === 'modalPacienteNovo' && idx !== null) { 
+        const p = db.pacientes[idx]; 
+        ['id','nome','nasc','tel','end','cpf','profissao','civil','desde'].forEach(f => { 
+            const el = document.getElementById('p-'+f); 
+            if (el) el.value = p[f] || ''; 
+        }); 
+        const elCep = document.getElementById('p-cep'); 
+        if (elCep) elCep.value = ''; 
+    } else if(id === 'modalPacienteNovo') { 
+        document.getElementById('form-p').reset(); 
+        document.getElementById('p-id').value = ""; 
+    }
+    
+    if (id === 'modalEvolucao') { document.getElementById('form-ev').reset(); }
+    if (id === 'modalFinanceiro') document.getElementById('form-f').reset();
+}
+
+function closeModal(id) { 
+    document.getElementById(id).style.display = 'none'; 
+}
+
+function toggleMenuMobile() { 
+    if (window.innerWidth <= 768) {
+        document.querySelector('.sidebar').classList.toggle('open'); 
+        document.querySelector('.mobile-overlay').classList.toggle('open'); 
+    } else {
+        document.querySelector('.sidebar').classList.toggle('collapsed');
+    }
+}
+
+function resetSistema(){ 
+    customConfirm("Atenção! Isso apagará TODOS os dados. Prosseguir?", () => { 
+        localStorage.removeItem('fisiov_jack_GOLD_V9_FASE3'); 
+        localStorage.removeItem('fisiov_jack_GOLD_V9_FASE2'); 
+        localStorage.removeItem('fisiov_jack_GOLD_V8'); 
+        location.reload(); 
+    }); 
+}
+
+function fazerBackup(){ 
+    const a = document.createElement('a'); 
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(db)], {type: "application/json"})); 
+    a.download = "backup_fisio_premium.json"; 
+    a.click(); 
+    showToast("Download de backup iniciado"); 
+}
+
+function restaurarBackup(){ 
+    const f = document.getElementById('backup-upload').files[0]; 
+    if (!f) return; 
+    const r = new FileReader(); 
+    r.onload = function(e){ 
+        try { 
+            const d = JSON.parse(e.target.result); 
+            customConfirm("Isso substituirá todos os dados atuais. Confirmar?", () => { 
+                CloudAPI.setDados(d).then(() => location.reload()); 
+            }); 
+        } catch(err){ 
+            showToast("Erro ao restaurar arquivo.", "error"); 
+        } 
+    }; 
+    r.readAsText(f); 
+}
+
+function mudarSenha(){
+    const nova = document.getElementById('nova-senha').value;
+    if (nova) {
+        db.pass = nova;
+        showToast("Senha alterada com sucesso!");
+        CloudAPI.setDados(db);
+    }
+}
+
+function addServico(){
+    const nome = document.getElementById('new-serv-nome').value.trim();
+    const cor = document.getElementById('new-serv-cor').value;
+    if (!nome) return;
+    db.servicos.push({nome, cor});
+    CloudAPI.setDados(db).then(() => atualizarUI());
+    document.getElementById('new-serv-nome').value = ""; 
+    showToast("Serviço adicionado!");
+}
+
+function popularAnosFinanceiro() {
+    const selectAno = document.getElementById('fin-filtro-ano'); 
+    if (!selectAno) return;
+    const anoAtual = new Date().getFullYear();
+    let anosHTML = '';
+    for(let y = anoAtual + 20; y >= anoAtual - 10; y--) { 
+        anosHTML += `<option value="${y}">${y}</option>`; 
+    }
+    selectAno.innerHTML = anosHTML;
+    selectAno.value = filtroFinAno || anoAtual;
+}
+
+function atualizarWidgetsDashboard() {
+    const hojeIso = getSafeDateISO(new Date());
+    const agHoje = db.agenda.filter(a => a.data === hojeIso);
+    const agendadosHoje = agHoje.length;
+    const atendidosHoje = agHoje.filter(a => a.status === 'Atendido').length;
+    const faltasHoje = agHoje.filter(a => a.status === 'Cancelado').length;
+    
+    document.getElementById('wdg-agendados').innerText = agendadosHoje;
+    document.getElementById('wdg-atendidos').innerText = atendidosHoje;
+    document.getElementById('wdg-faltas').innerText = faltasHoje;
+
+    const pacotesAtivos = {};
+    db.agenda.forEach(a => {
+        if (a.pacoteId) {
+            const nomeExibicao = db.pacientes.find(p => p.id === a.pacienteId)?.nome || a.paciente || a.titulo;
+            if (!pacotesAtivos[a.pacoteId]) pacotesAtivos[a.pacoteId] = { 
+                nome: a.pacoteNome, 
+                paciente: nomeExibicao, 
+                total: a.pacoteTotal, 
+                atendidos: 0, 
+                validos: 0 
+            };
+            if (a.status !== 'Cancelado') pacotesAtivos[a.pacoteId].validos++;
+            if (a.status === 'Atendido') pacotesAtivos[a.pacoteId].atendidos++;
+        }
+    });
+    
+    const pacotesFim = Object.values(pacotesAtivos).filter(p => p.validos > 0 && (p.validos - p.atendidos) <= 2 && (p.validos - p.atendidos) >= 0);
+    const containerPacotes = document.getElementById('widget-pacotes');
+    
+    if (pacotesFim.length === 0) {
+        containerPacotes.innerHTML = `<div style="text-align:center; color:var(--text-light); padding:10px 0;"><i class="fas fa-check-circle" style="font-size:1.5rem; opacity:0.5; margin-bottom:5px; display:block;"></i> Tudo tranquilo por enquanto.</div>`;
+    } else {
+        containerPacotes.innerHTML = pacotesFim.map(p => {
+            const faltam = p.validos - p.atendidos;
+            let badge = faltam === 0 ? `<span style="background:var(--danger); color:white; padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:bold;">Finalizado</span>` : `<span style="background:var(--warning); color:white; padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:bold;">Faltam ${faltam}</span>`;
+            return `
+                <div class="widget-item">
+                    <div><strong style="color:var(--accent); display:block;">${p.paciente.split(' ')[0]}</strong><small style="opacity:0.8;">${p.nome}</small></div>
+                    <div>${badge}</div>
+                </div>`;
+        }).join('');
+    }
+
+    const pendencias = [];
+    const hojeBr = new Date().toLocaleDateString('pt-BR');
+    
+    const agAtendidosHoje = agHoje.filter(a => a.status === 'Atendido' && a.pacienteId);
+    agAtendidosHoje.forEach(at => {
+        const hasEvolucao = db.evolucoes.some(e => e.pacienteId === at.pacienteId && e.data.startsWith(hojeBr));
+        const nomePac = db.pacientes.find(p => p.id === at.pacienteId)?.nome || at.paciente;
+        if (!hasEvolucao) pendencias.push({ tipo: 'Evolução', desc: `Falta evolução de ${nomePac.split(' ')[0]}` });
+    });
+
+    const containerPendencias = document.getElementById('widget-pendencias');
+    if (pendencias.length === 0) {
+        containerPendencias.innerHTML = `<div style="text-align:center; color:var(--text-light); padding:10px 0;"><i class="fas fa-glass-cheers" style="font-size:1.5rem; opacity:0.5; margin-bottom:5px; display:block;"></i> Nenhuma pendência hoje!</div>`;
+    } else {
+        containerPendencias.innerHTML = pendencias.map(p => {
+            return `
+                <div class="widget-item">
+                    <span style="color:var(--danger);"><i class="fas fa-exclamation-circle"></i> ${p.desc}</span>
+                    <button class="btn btn-small" onclick="showTab('prontuario')" style="padding:4px 8px; font-size:0.7rem;">Resolver</button>
+                </div>`;
+        }).join('');
+    }
+
+    const listaNiver = document.getElementById('lista-aniversariantes');
+    if (listaNiver) {
+        const nivers = db.pacientes.filter(p => { 
+            if(!p.nasc) return false; 
+            return (parseInt(p.nasc.split('-')[1])-1) === new Date().getMonth(); 
+        }).sort((a,b) => parseInt(a.nasc.split('-')[2]) - parseInt(b.nasc.split('-')[2]));
+        
+        if (nivers.length === 0) {
+            listaNiver.innerHTML = '<div style="text-align:center; color:var(--text-light); padding:10px 0;"><p>Nenhum aniversariante.</p></div>';
+        } else {
+            listaNiver.innerHTML = nivers.map(p => `
+                <div class="widget-item">
+                    <b>${p.nasc.split('-')[2]}</b> - ${p.nome.split(' ')[0]} 
+                    <a href="https://wa.me/55${p.tel.replace(/\D/g,'')}?text=Parabéns ${p.nome.split(' ')[0]}!%20Te%20desejo%20muita%20sa%C3%BAde%20e%20paz.%20Um%20abra%C3%A7o%20da%20cl%C3%ADnica!" target="_blank" style="color:var(--warning); font-size:1.1rem;">
+                        <i class="fas fa-gift"></i>
+                    </a>
+                </div>
+            `).join('');
+        }
+    }
+}
+
+function parseBRDate(dStr) {
+    if (!dStr) return 0;
+    const regex = /(\d{2})\/(\d{2})\/(\d{4})(?:[ ,]+(\d{2}):(\d{2})(?::(\d{2}))?)?/;
+    const match = dStr.match(regex);
+    if (match) return new Date(match[3], match[2]-1, match[1], match[4]||0, match[5]||0, match[6]||0).getTime();
+    return new Date(dStr).getTime() || 0;
+}
+
+function iniciarNovaFicha(){
+    const pacienteId = document.getElementById('ana-paciente-select').value;
+    if (!pacienteId) return showToast("Selecione um paciente cadastrado.", "error");
+    
+    document.getElementById('ana-historico-container').style.display = 'none'; 
+    document.getElementById('campos-anamnese').style.display = 'block'; 
+    document.getElementById('btn-editar-container').style.display = 'none';
+    
+    const btnSalvar = document.getElementById('btn-salvar-anamnese'); 
+    btnSalvar.style.display = 'block'; 
+    btnSalvar.onclick = () => salvarAnamnese();
+    
+    ['queixa','hda','ant','med','exames','diag','limit','objetivos','prog','fisico','plano'].forEach(id => { 
+        const el = document.getElementById('ana-'+id); 
+        el.value = ''; 
+        el.disabled = false; 
+    });
+}
+
+function toggleHistoricoAnamnese(){
+    const pacienteId = document.getElementById('ana-paciente-select').value;
+    if (!pacienteId) return showToast("Selecione um paciente cadastrado.", "error");
+    
+    document.getElementById('campos-anamnese').style.display = 'none'; 
+    document.getElementById('ana-historico-container').style.display = 'block';
+    
+    const lista = document.getElementById('ana-historico-lista'); 
+    const fichas = db.anamneses[pacienteId] || [];
+    
+    if (fichas.length === 0) { 
+        lista.innerHTML = `
+            <div class="empty-state" style="grid-column: 1 / -1;">
+                <i class="fas fa-file-medical-alt" style="font-size:2rem;"></i>
+                <p>Nenhuma avaliação encontrada.</p>
+            </div>`; 
+    } else { 
+        lista.innerHTML = fichas.map((f, i) => `
+            <div class="card" style="padding:12px; margin:0; cursor:pointer; border:1px solid var(--accent-gold); box-shadow:none;" onclick="verAnamnese('${pacienteId}', ${i})">
+                <strong style="color:var(--accent); font-family:var(--font-serif);">
+                    <i class="far fa-calendar-alt"></i> ${f.data}
+                </strong><br>
+                <small style="color:var(--text-main);">${f.queixa ? f.queixa.substring(0, 40) + '...' : 'Ficha de Avaliação'}</small>
+            </div>
+        `).join(''); 
+    }
+}
+
+async function salvarAnamnese(index = null){
+    const pacienteId = document.getElementById('ana-paciente-select').value;
+    
+    const ficha = { 
+        data: new Date().toLocaleDateString('pt-BR') + ' ' + new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}), 
+        timestamp: Date.now(), 
+        queixa: document.getElementById('ana-queixa').value, 
+        hda: document.getElementById('ana-hda').value, 
+        ant: document.getElementById('ana-ant').value, 
+        med: document.getElementById('ana-med').value, 
+        exames: document.getElementById('ana-exames').value, 
+        diag: document.getElementById('ana-diag').value, 
+        limit: document.getElementById('ana-limit').value, 
+        objetivos: document.getElementById('ana-objetivos').value, 
+        prog: document.getElementById('ana-prog').value, 
+        fisico: document.getElementById('ana-fisico').value, 
+        plano: document.getElementById('ana-plano').value 
+    };
+    
+    if (!db.anamneses[pacienteId]) db.anamneses[pacienteId] = [];
+    
+    if (index !== null) { 
+        ficha.data = db.anamneses[pacienteId][index].data; 
+        ficha.timestamp = db.anamneses[pacienteId][index].timestamp; 
+        db.anamneses[pacienteId][index] = ficha; 
+    } else { 
+        db.anamneses[pacienteId].push(ficha); 
+    }
+    
+    await CloudAPI.setDados(db); 
+    showToast("Avaliação salva com sucesso!"); 
+    toggleHistoricoAnamnese(); 
+    atualizarUI();
+}
+
+function verAnamnese(pacienteId, i){
+    document.getElementById('ana-historico-container').style.display = 'none'; 
+    document.getElementById('campos-anamnese').style.display = 'block'; 
+    document.getElementById('btn-editar-container').style.display = 'block'; 
+    document.getElementById('btn-salvar-anamnese').style.display = 'none';
+    
+    const f = db.anamneses[pacienteId][i]; 
+    ['queixa','hda','ant','med','exames','diag','limit','objetivos','prog','fisico','plano'].forEach(id => { 
+        const el = document.getElementById('ana-'+id); 
+        el.value = f[id] || ''; 
+        el.disabled = true; 
+    });
+    
+    document.querySelector('#btn-editar-container button').onclick = () => habilitarEdicaoAnamnese(i);
+}
+
+function habilitarEdicaoAnamnese(i){ 
+    ['queixa','hda','ant','med','exames','diag','limit','objetivos','prog','fisico','plano'].forEach(id => { 
+        document.getElementById('ana-'+id).disabled = false; 
+    }); 
+    document.getElementById('btn-editar-container').style.display = 'none'; 
+    
+    const btnSalvar = document.getElementById('btn-salvar-anamnese'); 
+    btnSalvar.style.display = 'block'; 
+    btnSalvar.onclick = () => salvarAnamnese(i); 
+}
+
+function mudarView(view, cid) { 
+    if (cid === 'dash-calendar-container') { 
+        dashView = view; 
+    } else { 
+        agendaView = view; 
+    } 
+    
+    ['dia','sem','mes'].forEach(v => { 
+        const btn = document.getElementById(`btn-${cid.includes('dash')?'dash':'ag'}-${v}`); 
+        if (btn) btn.classList.remove('active'); 
+    }); 
+    
+    const activeBtn = document.getElementById(`btn-${cid.includes('dash')?'dash':'ag'}-${view}`); 
+    if (activeBtn) activeBtn.classList.add('active'); 
+    
+    renderAgenda(cid, view, cid === 'dash-calendar-container' ? new Date() : agendaDate); 
+}
+
+function navegarAgenda(d) { 
+    if (agendaView === 'mes') {
+        agendaDate.setMonth(agendaDate.getMonth() + d); 
+    } else { 
+        agendaDate.setDate(agendaDate.getDate() + (d * (agendaView === 'sem' ? 7 : 1))); 
+    }
+    agendaDate = new Date(agendaDate); 
+    atualizarUI(); 
+}
+
+function renderAgenda(cid, view, dateContext) {
+    const c = document.getElementById(cid); 
+    if (!c) return; 
+    
+    let htmlBuffer = '';
+    const y = dateContext.getFullYear();
+    const m = dateContext.getMonth();
+    const d = dateContext.getDate();
+    
+    if (cid === 'agenda-calendar-container') { 
+        const lbl = document.getElementById('agenda-mes-ano-label'); 
+        if (lbl) lbl.innerText = `${['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][m]} ${y}`; 
+    }
+
+    if (view === 'mes') {
+        const dim = new Date(y, m + 1, 0).getDate();
+        const fd = new Date(y, m, 1).getDay();
+        
+        htmlBuffer = '<div class="calendar-grid">'; 
+        ['DOM','SEG','TER','QUA','QUI','SEX','SAB'].forEach(hd => htmlBuffer += `<div class="cal-header">${hd}</div>`);
+        
+        for(let i = 0; i < fd; i++) {
+            htmlBuffer += '<div class="cal-day" style="background:transparent;cursor:default;border:none;box-shadow:none;"></div>';
+        }
+        
+        for(let i = 1; i <= dim; i++) {
+            const iso = `${y}-${String(m+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+            const block = db.bloqueios.find(b => b.data === iso); 
+            const evts = db.agenda.filter(a => a.data === iso); 
+            const isToday = (iso === getSafeDateISO(new Date()));
+            const clickAction = block ? '' : `onclick="verDiaDetalhe('${iso}')"`;
+            
+            const dotsHtml = evts.map(e => {
+                let dotColor = e.prioridade ? '#2A52BE' : (e.cor || 'var(--accent)');
+                if (e.status === 'Atendido') dotColor = 'var(--success)';
+                if (e.status === 'Remarcado') dotColor = 'var(--warning)';
+                if (e.status === 'Cancelado') dotColor = 'var(--danger)';
+                
+                const tituloEvt = db.pacientes.find(p => p.id === e.pacienteId)?.nome || e.paciente || e.titulo;
+                return `<span class="cal-dot" style="background:${dotColor}" onclick="event.stopPropagation(); editarAgendamento('${e.id}')" title="${tituloEvt} - ${e.hora}"></span>`;
+            }).join('');
+            
+            htmlBuffer += `<div class="cal-day ${block?'blocked':''} ${isToday?'today':''}" ${clickAction}><span class="cal-num">${i}</span><div class="cal-dots">${dotsHtml}</div></div>`;
+        }
+        htmlBuffer += '</div>';
+        
+    } else if (view === 'sem') {
+        const start = new Date(dateContext); 
+        start.setDate(d - start.getDay()); 
+        htmlBuffer = '<div class="week-view-container">';
+        
+        for(let i = 0; i < 7; i++) {
+            let curr = new Date(start); 
+            curr.setDate(start.getDate() + i); 
+            const iso = getSafeDateISO(curr); 
+            const block = db.bloqueios.find(b => b.data === iso); 
+            const evts = db.agenda.filter(a => a.data === iso).sort((a,b) => a.hora.localeCompare(b.hora));
+            const colClick = block ? '' : `onclick="novoAgendamento('${iso}')"`;
+            
+            let weekCards = '';
+            if (evts.length > 0) {
+                const groupedW = {}; 
+                evts.forEach(e => { 
+                    if (!groupedW[e.hora]) groupedW[e.hora] = []; 
+                    groupedW[e.hora].push(e); 
+                });
+                
+                Object.keys(groupedW).forEach(h => {
+                    const group = groupedW[h]; 
+                    const mainEvt = group[0];
+                    let cardBg = 'var(--card-bg)';
+                    let cardBorder = mainEvt.cor || 'var(--accent)';
+                    let cardText = 'var(--text-main)';
+                    
+                    if (mainEvt.prioridade) { cardBorder = '#2A52BE'; }
+                    
+                    const weekChips = group.map(g => {
+                        let chipStyle = 'display:inline-block; margin-right:4px; padding: 2px 6px; border-radius: 6px; font-weight: 600; font-size: 0.7rem;';
+                        if (g.status === 'Atendido') chipStyle += ' background: var(--success) !important; color: white !important;';
+                        else if (g.status === 'Remarcado') chipStyle += ' background: var(--warning) !important; color: white !important;';
+                        else if (g.status === 'Cancelado') chipStyle += ' background: var(--danger) !important; color: white !important; text-decoration: line-through !important;';
+                        else if (g.prioridade) chipStyle += ' background: #2A52BE; color: white;';
+                        else chipStyle += ' background: rgba(0,0,0,0.05); color: var(--text-main); border: 1px solid rgba(0,0,0,0.1);';
+                        
+                        let bdayIcon = '';
+                        const pacData = db.pacientes.find(x => x.id === g.pacienteId);
+                        const tituloG = pacData?.nome || g.paciente || g.titulo;
+                        
+                        if (pacData && pacData.nasc) {
+                            const nd = pacData.nasc.split('-');
+                            const currentIsoParts = iso.split('-');
+                            if (nd[1] === currentIsoParts[1] && nd[2] === currentIsoParts[2]) {
+                                bdayIcon = ' <i class="fas fa-birthday-cake" style="color: #FFD700; margin-left: 2px;" title="Aniversariante do dia!"></i>';
+                            }
+                        }
+
+                        return `<span style="${chipStyle}">${tituloG}${bdayIcon}</span>`;
+                    }).join(' ');
+
+                    weekCards += `<div class="week-card" onclick="event.stopPropagation(); editarAgendamento('${mainEvt.id}');" style="border-left:4px solid ${cardBorder}; background:${cardBg}; color:${cardText};"><strong>${h} - ${mainEvt.horaFim || '...'}</strong><br><div style="margin-top:4px;">${weekChips}</div></div>`;
+                });
+            }
+            htmlBuffer += `<div class="week-col ${block?'blocked-col':''}" ${colClick}><div class="week-header">${curr.getDate()}/${curr.getMonth()+1}</div>${weekCards}</div>`;
+        }
+        htmlBuffer += '</div>';
+        
+    } else {
+        const iso = getSafeDateISO(dateContext); 
+        const block = db.bloqueios.find(b => b.data === iso); 
+        htmlBuffer = '<div class="timeline-container">';
+        
+        for(let hh = 0; hh <= 23; hh++) {
+            const hstr = String(hh).padStart(2,'0'); 
+            const evtsThisHour = db.agenda.filter(a => a.data === iso && a.hora.startsWith(hstr + ":"));
+            const rowClass = block ? 'blocked-row' : ''; 
+            const rowClick = (!block) ? `onclick="novoAgendamento('${iso}','${hstr}:00')"` : '';
+            
+            htmlBuffer += `<div class="timeline-row ${rowClass}" ${rowClick}><div class="time-label">${hstr}:00</div><div class="events-track">`;
+            
+            if (evtsThisHour.length > 0) {
+                const grouped = {}; 
+                evtsThisHour.forEach(e => { 
+                    if (!grouped[e.hora]) grouped[e.hora] = []; 
+                    grouped[e.hora].push(e); 
+                });
+                
+                Object.keys(grouped).forEach(exactTime => {
+                    const group = grouped[exactTime]; 
+                    const mainEvt = group[0]; 
+                    const minutosInicio = parseInt(exactTime.split(':')[1]) || 0;
+                    let durMinutes = 60;
+                    
+                    if (mainEvt.horaFim) { 
+                        const inicioDate = new Date(`2000-01-01T${exactTime}`); 
+                        const fimDate = new Date(`2000-01-01T${mainEvt.horaFim}`); 
+                        durMinutes = (fimDate - inicioDate) / 60000; 
+                        if (durMinutes <= 0) durMinutes = 60; 
+                    }
+                    
+                    const offsetTopPx = (minutosInicio / 60) * 65; 
+                    const heightPx = Math.max(50, (durMinutes / 60) * 65);
+                    
+                    let cardBg = 'var(--card-bg)';
+                    let cardBorder = mainEvt.cor || 'var(--accent)';
+                    let cardText = 'var(--text-main)';
+                    if (mainEvt.prioridade) { cardBorder = '#2A52BE'; }
+
+                    const chipsHtml = group.map(g => {
+                        let title = db.pacientes.find(p => p.id === g.pacienteId)?.nome || g.paciente || g.titulo; 
+                        let icon = ''; 
+                        let chipClass = 'chip';
+                        let style = `border: 1px solid rgba(0,0,0,0.1);`;
+
+                        if (g.status === 'Atendido') { icon = '<i class="fas fa-check-circle"></i> '; chipClass += ' bg-atendido'; style += 'border-color: rgba(0,0,0,0.1);'; }
+                        else if (g.status === 'Remarcado') { icon = '<i class="fas fa-sync"></i> '; chipClass += ' bg-remarcado'; style += 'border-color: rgba(0,0,0,0.1);'; }
+                        else if (g.status === 'Cancelado') { icon = '<i class="fas fa-times-circle"></i> '; chipClass += ' bg-cancelado'; style += 'border-color: rgba(0,0,0,0.1);'; }
+                        else {
+                            if (g.prioridade) { style += `background-color: #2A52BE; color: white; border-color: #2A52BE;`; } 
+                            else { style += `color: var(--text-main);`; }
+                        }
+
+                        let bdayIcon = '';
+                        const pacData = db.pacientes.find(x => x.id === g.pacienteId);
+                        if (pacData && pacData.nasc) {
+                            const nd = pacData.nasc.split('-');
+                            const currentIsoParts = iso.split('-');
+                            if (nd[1] === currentIsoParts[1] && nd[2] === currentIsoParts[2]) {
+                                bdayIcon = ' <i class="fas fa-birthday-cake" style="color: #FFD700; margin-left: 4px; animation: pulse 2s infinite;" title="Aniversariante do dia!"></i>';
+                            }
+                        }
+
+                        return `<span class="${chipClass}" onclick="event.stopPropagation(); editarAgendamento('${g.id}');" title="${title}" style="${style}">${icon}${title.split(' ')[0]}${bdayIcon}</span>`;
+                    }).join('');
+                    
+                    htmlBuffer += `<div class="grouped-card" onclick="event.stopPropagation(); editarAgendamento('${mainEvt.id}');" style="top: ${offsetTopPx}px; height: ${heightPx}px; border-color: ${cardBorder}; background:${cardBg};"><strong style="opacity:0.9; margin-bottom: 2px; font-size:0.75rem; color:var(--text-main);">${exactTime} as ${mainEvt.horaFim || '...'}</strong><div class="chips-container">${chipsHtml}</div></div>`;
+                });
+            }
+            htmlBuffer += '</div></div>';
+        }
+        htmlBuffer += '</div>';
+    }
+    c.innerHTML = htmlBuffer;
+}
+
+function enviarZapLembrete(id){ 
+    const e = db.agenda.find(x => x.id === id); 
+    if (!e) return;
+    const p = db.pacientes.find(x => x.id === e.pacienteId); 
+    if (!p || !p.tel) return showToast("Paciente sem telefone ou não cadastrado formalmente.", "error"); 
+    
+    const d = e.data.split('-'); 
+    const dataF = `${d[2]}/${d[1]}`; 
+    const texto = `Olá ${p.nome.split(' ')[0]}, tudo bem? Aqui é do consultório. Passando para lembrar do nosso agendamento dia ${dataF}, às ${e.hora}. Podemos confirmar sua presença?`; 
+    window.open(`https://wa.me/55${p.tel.replace(/\D/g, '')}?text=${encodeURIComponent(texto)}`, '_blank'); 
+}
+
+function verDiaDetalhe(iso) { 
+    agendaDate = new Date(iso+'T12:00:00'); // Trava de Fuso
+    agendaView = 'dia'; 
+    showTab('agenda'); 
+}
+
+function novoAgendamento(date, time='08:00'){ 
+    document.getElementById('ag-id').value = ''; 
+    document.getElementById('ag-data').value = date; 
+    document.getElementById('ag-hora').value = time; 
+    
+    const h = parseInt(time.split(':')[0]); 
+    const m = time.split(':')[1]; 
+    document.getElementById('ag-hora-fim').value = `${String(h+1).padStart(2,'0')}:${m}`;
+    
+    document.getElementById('ag-paciente-select').value = ''; 
+    document.getElementById('ag-paciente-input').value = ''; 
+    document.getElementById('ag-paciente-input').style.display = 'block';
+    
+    document.getElementById('ag-obs').value = ''; 
+    document.getElementById('ag-prioridade').checked = false; 
+    document.getElementById('ag-cor').value = ''; 
+    
+    document.getElementById('ag-is-pacote').checked = false;
+    document.getElementById('ag-is-pacote').disabled = false;
+    document.getElementById('ag-pacote-opts').style.display = 'none';
+    document.getElementById('ag-pacote-nome').value = '';
+    document.getElementById('ag-pacote-qtd').value = '10';
+    document.getElementById('ag-pacote-valor').value = '';
+    
+    document.querySelectorAll('.chip-dia').forEach(c => c.classList.remove('active'));
+
+    const extraActions = document.getElementById('ag-extra-actions'); 
+    if (extraActions) extraActions.style.display = 'none';
+    
+    openModal('modalAgendamento'); 
+}
+
+function bloquearDiaHoje() { 
+    const iso = getSafeDateISO(agendaDate); 
+    document.getElementById('bloqueio-data-input').value = iso; 
+    checkBloqueioStatus(iso); 
+    document.getElementById('bloqueio-data-input').onchange = function(){ checkBloqueioStatus(this.value) }; 
+    openModal('modalBloqueio'); 
+}
+
+function checkBloqueioStatus(iso) { 
+    const b = db.bloqueios.find(x => x.data === iso); 
+    document.getElementById('area-bloquear').style.display = b ? 'none' : 'block'; 
+    document.getElementById('area-desbloquear').style.display = b ? 'block' : 'none'; 
+}
+
+async function confirmarBloqueio() { 
+    const d = document.getElementById('bloqueio-data-input').value;
+    const m = document.getElementById('bloqueio-motivo').value; 
+    
+    if (d && m) { 
+        db.bloqueios.push({data: d, motivo: m}); 
+        await CloudAPI.setDados(db); 
+        closeModal('modalBloqueio'); 
+        showToast("Data bloqueada!"); 
+        atualizarUI();
+    } 
+}
+
+async function desbloquearData() { 
+    const d = document.getElementById('bloqueio-data-input').value; 
+    db.bloqueios = db.bloqueios.filter(x => x.data !== d); 
+    await CloudAPI.setDados(db); 
+    closeModal('modalBloqueio'); 
+    showToast("Data desbloqueada!"); 
+    atualizarUI();
+}
+
+async function salvarAgendamento(){ 
+    const id = document.getElementById('ag-id').value;
+    const d = document.getElementById('ag-data').value;
+    const h = document.getElementById('ag-hora').value;
+    const hFim = document.getElementById('ag-hora-fim').value; 
+    
+    const pacSelectVal = document.getElementById('ag-paciente-select').value;
+    const pacInputVal = document.getElementById('ag-paciente-input').value.trim();
+    
+    let pacienteId = null;
+    let pNome = '';
+    let tit = '';
+
+    if (pacSelectVal) {
+        pacienteId = pacSelectVal;
+        pNome = db.pacientes.find(p=>p.id===pacienteId)?.nome || '';
+        tit = pNome;
+    } else {
+        if (!pacInputVal) return showToast("Preencha data, hora e selecione/digite o nome.", "error");
+        pNome = pacInputVal;
+        tit = pacInputVal;
+    }
+    
+    if (!d || !h) { return showToast("Preencha data e hora.", "error"); }
+    
+    const isPacote = document.getElementById('ag-is-pacote').checked && !id;
+
+    if (isPacote) {
+        const qtd = parseInt(document.getElementById('ag-pacote-qtd').value);
+        const pacoteNome = document.getElementById('ag-pacote-nome').value || 'Pacote/Mensalidade';
+        const diasSelecionados = Array.from(document.querySelectorAll('.chip-dia.active')).map(el => parseInt(el.getAttribute('data-dia')));
+        
+        if (diasSelecionados.length === 0) return showToast("Selecione pelo menos um dia da semana para o pacote.", "error");
+        if (isNaN(qtd) || qtd < 2) return showToast("Quantidade de sessões inválida.", "error");
+
+        // FASE 3: Correção de Fuso Horário e Promise de Salvamento em Massa
+        let dataAtual = new Date(d + "T12:00:00"); 
+        let sessoesCriadas = 0;
+        const pacoteIdHash = 'PAC_' + Date.now();
+        
+        while(sessoesCriadas < qtd) {
+            if (diasSelecionados.includes(dataAtual.getDay())) {
+                const dataIso = getSafeDateISO(dataAtual);
+                const evtPct = {
+                    id: Date.now().toString() + '_' + sessoesCriadas,
+                    data: dataIso, hora: h, horaFim: hFim,
+                    pacienteId: pacienteId, paciente: pNome, titulo: tit, status: 'Agendado',
+                    obs: document.getElementById('ag-obs').value,
+                    prioridade: document.getElementById('ag-prioridade').checked,
+                    cor: document.getElementById('ag-cor').value,
+                    pacoteId: pacoteIdHash,
+                    pacoteNome: pacoteNome,
+                    pacoteTotal: qtd
+                };
+                db.agenda.push(evtPct);
+                sessoesCriadas++;
+            }
+            dataAtual.setDate(dataAtual.getDate() + 1);
+        }
+        
+        const valorTotalStr = document.getElementById('ag-pacote-valor').value;     
+               if (valorTotalStr) {
+            const valFloat = parseFloat(valorTotalStr.replace(/\./g, '').replace(',', '.'));
+            if (valFloat > 0) {
+                // BACKLOG: Sincronização Estrita (Injeção de ID e formatação de data)
+                const finObj = { 
+                    id: 'FIN_' + Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                    desc: `Pacote: ${pacoteNome}`, 
+                    valor: valFloat, 
+                    data: d, // Data exata selecionada no formulário de agendamento (YYYY-MM-DD)
+                    tipo: 'entrada', 
+                    pacienteId: pacienteId 
+                };
+                db.financeiro.push(finObj); 
+                showToast("Receita do pacote lançada no Financeiro!", "success");
+            }
+        }
+
+        await CloudAPI.setDados(db);
+        db = await CloudAPI.getDados(); 
+        closeModal('modalAgendamento');
+        atualizarUI();
+        return showToast(`${qtd} sessões do pacote agendadas com sucesso!`);
+
+    } else {
+        const evt = { 
+            id: id || Date.now().toString(), 
+            data: d, hora: h, horaFim: hFim, 
+            pacienteId: pacienteId, paciente: pNome, titulo: tit, status: 'Agendado', 
+            obs: document.getElementById('ag-obs').value, 
+            prioridade: document.getElementById('ag-prioridade').checked, 
+            cor: document.getElementById('ag-cor').value 
+        }; 
+        
+        if (id) {
+            const existing = db.agenda.find(x => x.id === id);
+            if (existing && existing.pacoteId) {
+                evt.pacoteId = existing.pacoteId;
+                evt.pacoteNome = existing.pacoteNome;
+                evt.pacoteTotal = existing.pacoteTotal;
+            }
+        }
+
+        try { 
+            await CloudAPI.salvarAgendamento(evt); 
+            db = await CloudAPI.getDados(); 
+            closeModal('modalAgendamento'); 
+            atualizarUI(); 
+            showToast("Compromisso salvo!"); 
+        } catch (e) { 
+            if (e.message === "ERRO_DATA_PASSADA") showToast("Não agende no passado.", "error"); 
+            else if (e.message === "ERRO_HORA_FIM_MENOR") showToast("A hora final deve ser maior.", "error"); 
+            else showToast("Erro ao agendar.", "error"); 
+        }
+    }
+}
+
+async function excluirAgendamento(id){ 
+    customConfirm("Excluir definitivamente este agendamento?", async () => { 
+        db.agenda = db.agenda.filter(x => x.id !== id); 
+        await CloudAPI.setDados(db); 
+        atualizarUI(); 
+        showToast("Agendamento excluído"); 
+        closeModal('modalAgendamento'); 
+        fecharHistorico(); 
+    }); 
+}
+
+function abrirModalEditarPacote(pacoteId, sessaoIdAtual) {
+    const e = db.agenda.find(x => x.id === sessaoIdAtual);
+    if (!e) return;
+    
+    document.getElementById('edit-pacote-id').value = pacoteId;
+    document.getElementById('edit-pacote-sessao-atual-id').value = sessaoIdAtual;
+    document.getElementById('edit-pacote-hora').value = e.hora;
+    document.getElementById('edit-pacote-hora-fim').value = e.horaFim || '';
+    
+    openModal('modalEditarPacote');
+}
+
+async function salvarEdicaoMassaPacote() {
+    const pacoteId = document.getElementById('edit-pacote-id').value;
+    const sessaoAtualId = document.getElementById('edit-pacote-sessao-atual-id').value;
+    const novaHora = document.getElementById('edit-pacote-hora').value;
+    const novaHoraFim = document.getElementById('edit-pacote-hora-fim').value;
+    
+    const sessaoAtual = db.agenda.find(x => x.id === sessaoAtualId);
+    if (!sessaoAtual) return;
+    
+    let countEditados = 0;
+    db.agenda.forEach(a => {
+        if (a.pacoteId === pacoteId && a.data >= sessaoAtual.data && a.status === 'Agendado') {
+            a.hora = novaHora;
+            a.horaFim = novaHoraFim;
+            countEditados++;
+        }
+    });
+    
+    await CloudAPI.setDados(db);
+    closeModal('modalEditarPacote');
+    closeModal('modalAgendamento');
+    atualizarUI();
+    showToast(`${countEditados} sessões futuras atualizadas com sucesso!`);
+}
+
+async function cancelarRestantePacote() {
+    const pacoteId = document.getElementById('edit-pacote-id').value;
+    const sessaoAtualId = document.getElementById('edit-pacote-sessao-atual-id').value;
+    const sessaoAtual = db.agenda.find(x => x.id === sessaoAtualId);
+    if (!sessaoAtual) return;
+
+    customConfirm("Cancelar todas as sessões agendadas a partir desta data?", async () => {
+        let countCancelados = 0;
+        db.agenda.forEach(a => {
+            if (a.pacoteId === pacoteId && a.data >= sessaoAtual.data && a.status === 'Agendado') {
+                a.status = 'Cancelado';
+                countCancelados++;
+            }
+        });
+        await CloudAPI.setDados(db);
+        closeModal('modalEditarPacote');
+        closeModal('modalAgendamento');
+        atualizarUI();
+        showToast(`${countCancelados} sessões canceladas.`);
+    });
+}
+
+function editarAgendamento(id) { 
+    const e = db.agenda.find(x => x.id === id); 
+    if (!e) return;
+    
+    document.getElementById('ag-id').value = e.id; 
+    document.getElementById('ag-data').value = e.data; 
+    document.getElementById('ag-hora').value = e.hora; 
+    document.getElementById('ag-hora-fim').value = e.horaFim || ''; 
+    
+    if (e.pacienteId) {
+        document.getElementById('ag-paciente-select').value = e.pacienteId;
+        document.getElementById('ag-paciente-input').style.display = 'none';
+        document.getElementById('ag-paciente-input').value = '';
+    } else {
+        document.getElementById('ag-paciente-select').value = '';
+        document.getElementById('ag-paciente-input').style.display = 'block';
+        document.getElementById('ag-paciente-input').value = e.paciente || e.titulo;
+    }
+
+    document.getElementById('ag-obs').value = e.obs || ''; 
+    document.getElementById('ag-prioridade').checked = e.prioridade || false; 
+    document.getElementById('ag-cor').value = e.cor || ''; 
+    
+    document.getElementById('ag-is-pacote').checked = false;
+    document.getElementById('ag-is-pacote').disabled = true;
+    document.getElementById('ag-pacote-opts').style.display = 'none';
+
+    let btnPacoteHTML = '';
+    if (e.pacoteId) {
+        btnPacoteHTML = `<button class="btn btn-small" onclick="event.preventDefault(); abrirModalEditarPacote('${e.pacoteId}', '${e.id}');" style="background:var(--warning); color:#fff; border:none; width: 100%; margin-bottom: 10px;"><i class="fas fa-layer-group"></i> Editar Pacote Completo (A partir desta data)</button>`;
+    }
+
+    let extraActions = document.getElementById('ag-extra-actions');
+    if (!extraActions) { 
+        extraActions = document.createElement('div'); 
+        extraActions.id = 'ag-extra-actions'; 
+        document.getElementById('ag-obs').parentNode.insertBefore(extraActions, document.getElementById('ag-obs').nextSibling); 
+    }
+    
+    extraActions.style = "display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px; border-top:1px solid rgba(0,0,0,0.05); padding-top:15px;";
+    
+    extraActions.innerHTML = `
+        <div style="grid-column: 1 / -1;">${btnPacoteHTML}</div>
+        <button class="btn btn-small" onclick="event.preventDefault(); db.agenda.find(x=>x.id==='${id}').status='Atendido'; CloudAPI.setDados(db).then(()=>atualizarUI()); closeModal('modalAgendamento'); showToast('Atendido');" style="color:white; background:var(--success); border:none;"><i class="fas fa-check"></i> Atendido</button>
+        <button class="btn btn-small" onclick="event.preventDefault(); db.agenda.find(x=>x.id==='${id}').status='Remarcado'; CloudAPI.setDados(db).then(()=>atualizarUI()); closeModal('modalAgendamento'); showToast('Remarcado');" style="color:white; background:var(--warning); border:none;"><i class="fas fa-sync"></i> Remarcado</button>
+        <button class="btn btn-small" onclick="event.preventDefault(); db.agenda.find(x=>x.id==='${id}').status='Cancelado'; CloudAPI.setDados(db).then(()=>atualizarUI()); closeModal('modalAgendamento'); showToast('Cancelado');" style="color:white; background:var(--danger); border:none;"><i class="fas fa-times"></i> Cancelar</button>
+        <button class="btn btn-small" onclick="event.preventDefault(); enviarZapLembrete('${id}')" style="background:#25D366; color:white; border:none;"><i class="fab fa-whatsapp"></i> Lembrete</button>
+        <button class="btn btn-small" onclick="event.preventDefault(); abrirHistoricoPaciente('${e.pacienteId}')" style="background:var(--accent); color:white; border:none;"><i class="fas fa-history"></i> Histórico</button>
+        <button class="btn btn-small" onclick="event.preventDefault(); excluirAgendamento('${id}')" style="color:var(--text-light); border:1px solid rgba(0,0,0,0.1);"><i class="fas fa-trash"></i> Excluir</button>
+    `;
+    openModal('modalAgendamento'); 
+}
+
+function abrirHistoricoPaciente(pacId) {
+    if (!pacId) return showToast("Agendamento avulso sem histórico formal.", "error");
+    
+    const hist = db.agenda.filter(a => a.pacienteId === pacId).sort((a,b) => new Date(b.data) - new Date(a.data));
+    
+    if (hist.length === 0) {
+        fecharHistorico();
+        return showToast("Nenhum histórico encontrado para este ID.", "error"); 
+    }
+    
+    const pacotesInfo = {};
+    hist.forEach(h => {
+        if (h.pacoteId) {
+            if (!pacotesInfo[h.pacoteId]) pacotesInfo[h.pacoteId] = { nome: h.pacoteNome, total: h.pacoteTotal, atendidos: 0, cancelados: 0, validos: 0 };
+            
+            if (h.status === 'Cancelado') pacotesInfo[h.pacoteId].cancelados++;
+            else pacotesInfo[h.pacoteId].validos++; 
+
+            if (h.status === 'Atendido') pacotesInfo[h.pacoteId].atendidos++;
+        }
+    });
+
+    let progressoHTML = '';
+    Object.keys(pacotesInfo).forEach(pid => {
+        const pInfo = pacotesInfo[pid];
+        const concluidas = pInfo.atendidos;
+        const totalValido = pInfo.validos; 
+        const restam = totalValido - concluidas;
+        
+        let bolinhas = '';
+        for(let i=0; i<concluidas; i++) bolinhas += '🟢';
+        for(let i=0; i<(totalValido - concluidas); i++) bolinhas += '⚪';
+        
+        progressoHTML += `
+        <div style="background:var(--card-bg); border:1px solid var(--accent-gold); padding:15px; border-radius:12px; margin-bottom:15px; text-align:center;">
+            <div style="font-size:1.2rem; margin-bottom:5px;">${bolinhas}</div>
+            <strong style="color:var(--accent); font-family:var(--font-serif); font-size:1rem;">Pacote: ${pInfo.nome} (${concluidas}/${totalValido} Sessões Realizadas)</strong><br>
+            <small style="color:var(--text-light); font-weight:bold;">Restam: ${restam} sessões válidas agendadas.</small>
+        </div>`;
+    });
+
+    const body = document.getElementById('offcanvas-historico-body');
+    body.innerHTML = progressoHTML + hist.map(h => {
+        const d = h.data.split('-'); 
+        const dataBR = `${d[2]}/${d[1]}/${d[0]}`; 
+        const dateObj = new Date(h.data + 'T12:00:00'); // Trava Fuso
+        const diaSemana = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'][dateObj.getDay()] || '';
+        
+        let badgeClass = 'bg-agendado'; 
+        if (h.status === 'Atendido') badgeClass = 'bg-atendido'; 
+        if (h.status === 'Remarcado') badgeClass = 'bg-remarcado'; 
+        if (h.status === 'Cancelado') badgeClass = 'bg-cancelado';
+        
+        let tagPacote = h.pacoteId ? `<div style="font-size:0.65rem; color:var(--accent-gold); font-weight:bold; margin-top:2px;"><i class="fas fa-box-open"></i> ${h.pacoteNome}</div>` : '';
+
+        return `
+        <div style="padding: 15px; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <strong style="color: var(--accent); font-size: 1.1rem;">${dataBR}</strong> 
+                <small style="color: var(--text-light);">${diaSemana}</small><br>
+                <span style="font-size: 0.85rem; color: var(--text-main);"><i class="far fa-clock"></i> ${h.hora} - ${h.horaFim||'...'}</span>
+                ${tagPacote}
+            </div>
+            <span class="status-badge ${badgeClass}">${h.status || 'Agendado'}</span>
+        </div>`;
+    }).join('');
+    
+    document.getElementById('offcanvas-historico').classList.add('open'); 
+    closeModal('modalAgendamento');
+}
+
+function fecharHistorico() { 
+    document.getElementById('offcanvas-historico').classList.remove('open'); 
+}
+
+function gerarRelatorioFinanceiroPDF() { 
+    const {jsPDF} = window.jspdf; 
+    const doc = new jsPDF(); 
+    const m = parseInt(document.getElementById('fin-filtro-mes').value); 
+    const y = parseInt(document.getElementById('fin-filtro-ano').value); 
+    const nm = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']; 
+    
+    const dadosFiltrados = db.financeiro.filter(f => { 
+        const d = new Date(f.data + "T12:00:00"); // Trava Fuso
+        return d.getMonth() === m && d.getFullYear() === y; 
+    }).sort((a,b) => a.data.localeCompare(b.data)); 
+    
+    if (dadosFiltrados.length === 0) return showToast("Nenhum dado financeiro neste mês para gerar relatório.", "error"); 
+    
+    doc.setFontSize(14); 
+    doc.text(`RELATÓRIO FINANCEIRO - ${nm[m]}/${y}`, 14, 20); 
+    doc.setFontSize(10); 
+    doc.text(`Profissional: ${licenca ? licenca.nome : 'Fisioterapeuta'}`, 14, 28); 
+    
+    let totalRec = 0; 
+    let totalDesp = 0; 
+    
+    const bodyData = dadosFiltrados.map(f => { 
+        const val = parseFloat(f.valor); 
+        if (f.tipo === 'entrada') totalRec += val; 
+        else totalDesp += val; 
+        return [ formatarDataBR(f.data), f.desc, f.tipo.toUpperCase(), `R$ ${val.toFixed(2)}` ]; 
+    }); 
+    
+    doc.autoTable({ 
+        startY: 35, 
+        head: [['Data', 'Descrição', 'Tipo', 'Valor']], 
+        body: bodyData, 
+        theme: 'striped', 
+        headStyles: { fillColor: [44, 74, 59] }, 
+        styles: { fontSize: 9 } 
+    }); 
+    
+    const finalY = doc.lastAutoTable.finalY + 10; 
+    doc.text(`Total Receitas: R$ ${totalRec.toFixed(2)}`, 14, finalY); 
+    doc.text(`Total Despesas: R$ ${totalDesp.toFixed(2)}`, 14, finalY + 6); 
+    doc.setFontSize(12); 
+    doc.text(`SALDO FINAL: R$ ${(totalRec - totalDesp).toFixed(2)}`, 14, finalY + 14); 
+    doc.save(`Relatorio_${nm[m]}_${y}.pdf`); 
+    showToast("Download do relatório iniciado!"); 
+}
+
+// ----------------------------------------------------
+// FUNÇÕES DE RECIBO COM A FORMATAÇÃO CORRETA SOLICITADA
+// ----------------------------------------------------
+
+function gerarTextoRecibo() { 
+    const pacienteId = document.getElementById('rec-paciente-select').value; 
+    const valorRaw = document.getElementById('rec-valor').value; 
+    if(!pacienteId || !valorRaw) return showToast("Selecione o paciente e insira o valor.", "error"); 
+    const p = db.pacientes.find(x => x.id === pacienteId); 
+    if(!p) return showToast("Paciente não cadastrado.", "error"); 
+    const texto = `RECIBO DE PRESTAÇÃO DE SERVIÇOS\n\nRecebi de ${p.nome}${p.cpf ? ` (CPF: ${p.cpf})` : ''}, a quantia de R$ ${valorRaw}, referente a serviços prestados nesta data.\n\nData: ${new Date().toLocaleDateString('pt-BR')}\nProfissional: ${licenca ? licenca.nome : 'Fisioterapeuta'}\nRegistro: ${licenca ? licenca.crefito : 'N/I'}\n\n*Documento gerado eletronicamente.*`; 
+    document.getElementById('rec-resultado').value = texto; 
+}
+
+function copiarRecibo() { 
+    const texto = document.getElementById('rec-resultado').value; 
+    if(!texto) return showToast("Gere o recibo primeiro.", "error"); 
+    navigator.clipboard.writeText(texto).then(() => { showToast("Copiado! Pronto para colar no WhatsApp."); }); 
+}
+
+function gerarPDFRecibo() { 
+    const pacienteId = document.getElementById('rec-paciente-select').value; 
+    const valorRaw = document.getElementById('rec-valor').value; 
+    if(!pacienteId || !valorRaw) return showToast("Selecione o paciente e insira o valor.", "error"); 
+    const p = db.pacientes.find(x => x.id === pacienteId); 
+    if(!p) return showToast("Paciente não cadastrado.", "error"); 
+    const { jsPDF } = window.jspdf; 
+    const doc = new jsPDF(); 
+    doc.setFillColor(44, 74, 59); doc.rect(0, 0, 210, 45, 'F'); doc.setTextColor(255, 255, 255); 
+    doc.setFont("helvetica", "bold"); doc.setFontSize(22); doc.text("RECIBO", 14, 22); 
+    doc.setFont("helvetica", "normal"); doc.setFontSize(10); 
+    doc.text(`Profissional: ${licenca ? licenca.nome : 'Fisioterapeuta'}`, 14, 30); 
+    doc.text(`Registro: ${licenca ? licenca.crefito : 'N/I'}`, 14, 36); 
+    doc.setTextColor(51, 61, 54); doc.setFontSize(14); 
+    doc.text(`Recebi de ${p.nome}${p.cpf ? ` (CPF: ${p.cpf})` : ''}, a quantia de R$ ${valorRaw},`, 14, 70); 
+    doc.text(`referente a serviços profissionais prestados nesta data.`, 14, 78); 
+    doc.setFontSize(12); doc.text(`Data: ${new Date().toLocaleDateString('pt-BR')}`, 14, 100); 
+    doc.setDrawColor(44, 74, 59); doc.line(60, 150, 150, 150); doc.setFontSize(10); 
+    doc.text("Assinatura do Profissional", 105, 156, { align: "center" }); 
+    doc.text(`${licenca ? licenca.nome : 'Fisioterapeuta'}`, 105, 162, { align: "center" }); 
+    doc.save(`Recibo_${p.nome.replace(/\s+/g, '_')}.pdf`); 
+    showToast("Recibo oficial em PDF gerado!"); 
+}
+
+// --- REGISTRO DE APLICATIVO (PWA) ---
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log('Erro no Service Worker:', err));
+    });
+}
+</script>
+        
+</body>
+</html>
+      
