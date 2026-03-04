@@ -246,6 +246,21 @@ footer { padding: 15px; font-size: 0.65rem; text-align: center; background: tran
 /* RESPONSIVIDADE */
 .mobile-overlay { display: none; position: fixed; inset: 0; background: rgba(44, 74, 59, 0.1); z-index: 99; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
 
+/* SELECTS PREMIUM E CUSTOMIZADOS */
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C5A059' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 16px;
+    padding-right: 40px !important;
+    cursor: pointer;
+}
+
+select::-ms-expand { display: none; }
+
+/* RESPONSIVIDADE E TABELAS EM CARDS (MOBILE) */
 @media (max-width: 768px) {
     .sidebar { position: fixed; left: -260px; top: 0; height: 100%; z-index: 100; border-radius: 0 20px 20px 0; margin-left: 0 !important; }
     .sidebar.open { left: 0; }
@@ -255,6 +270,27 @@ footer { padding: 15px; font-size: 0.65rem; text-align: center; background: tran
     .week-view-container { grid-template-columns: 1fr; }
     .login-box { padding: 30px 20px; }
     .offcanvas { right: -100%; max-width: 100%; }
+    
+    /* Mágica: Transforma Tabelas em Cards no Celular */
+    .table-container { border: none; box-shadow: none; background: transparent; overflow: visible; padding: 0; }
+    table, thead, tbody, th, td, tr { display: block; width: 100%; }
+    thead { display: none; } /* Esconde o cabeçalho no celular */
+    tr { 
+        background: var(--card-bg); margin-bottom: 15px; border-radius: 16px; 
+        padding: 15px; box-shadow: var(--shadow); border: 1px solid rgba(255,255,255,0.8); 
+    }
+    td { 
+        border: none !important; padding: 6px 0; text-align: left !important; 
+        display: flex; flex-direction: column; gap: 4px; 
+    }
+    td:last-child { 
+        margin-top: 10px; border-top: 1px dashed rgba(0,0,0,0.1) !important; 
+        padding-top: 15px; flex-direction: row; justify-content: flex-end; gap: 10px;
+    }
+    
+    /* Ajustes extras para o celular */
+    .stat-grid { grid-template-columns: 1fr; gap: 10px; }
+    .dashboard-widgets-grid { grid-template-columns: 1fr; }
 }
 
 .chip-dia { padding: 6px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: 0.2s; border: 1px solid rgba(0,0,0,0.1); background: var(--card-bg); color: var(--text-light); display: inline-block; text-align: center; }
@@ -405,8 +441,12 @@ footer { padding: 15px; font-size: 0.65rem; text-align: center; background: tran
                             <small>Atendidos</small>
                         </div>
                         <div class="resumo-dado">
+                            <span id="wdg-remarcados" style="color:var(--warning);">0</span>
+                            <small>Remarcados</small>
+                        </div>
+                        <div class="resumo-dado">
                             <span id="wdg-faltas" style="color:var(--danger);">0</span>
-                            <small>Faltas/Canc.</small>
+                            <small>Cancelados</small>
                         </div>
                     </div>
                 </div>
@@ -752,15 +792,19 @@ footer { padding: 15px; font-size: 0.65rem; text-align: center; background: tran
             <div><label>Fim</label><input type="time" id="ag-hora-fim"></div>
         </div>
         
-        <label>Cor da Etiqueta Livre</label>
-        <select id="ag-cor">
-            <option value="">Automático</option>
-            <option value="#E0F2FE">Azul Nuvem</option>
-            <option value="#D1FAE5">Verde Menta</option>
-            <option value="#FCE7F3">Rosa Bebê</option>
-            <option value="#FEF3C7">Amarelo Creme</option>
-            <option value="#EDE9FE">Lilás Suave</option>
-        </select>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; margin-bottom: 5px;">
+            <div>
+                <label>Serviço (Cor Automática)</label>
+                <select id="ag-servico">
+                    <option value="">Selecione...</option>
+                </select>
+                <input type="hidden" id="ag-cor" value="">
+            </div>
+            <div>
+                <label>Valor Avulso (R$)</label>
+                <input type="text" id="ag-valor-avulso" placeholder="0,00" oninput="maskCurrency(this)" title="Se preenchido, vai direto para o Financeiro">
+            </div>
+        </div>
         <label>Observações</label><textarea id="ag-obs" rows="2"></textarea>
         
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px; background: rgba(42, 82, 190, 0.05); padding: 8px; border-radius: 10px;">
@@ -1049,7 +1093,6 @@ function atualizarUIPacientes(pagina = paginaAtualPacientes) {
         p.nome.toLowerCase().includes(termoBusca) || (p.cpf && p.cpf.includes(termoBusca))
     );
     
-    // Lógica de Paginação
     const totalPaginas = Math.ceil(pacientesFiltrados.length / ITENS_POR_PAGINA);
     const inicio = (paginaAtualPacientes - 1) * ITENS_POR_PAGINA;
     const fim = inicio + ITENS_POR_PAGINA;
@@ -1075,12 +1118,16 @@ function atualizarUIPacientes(pagina = paginaAtualPacientes) {
         const linkWpp = numeroLimpo ? `https://wa.me/55${numeroLimpo}` : '#';
         const clickBloqueio = numeroLimpo ? '' : `onclick="showToast('Telefone não cadastrado!', 'error'); event.preventDefault();"`;
         
-        // Mensageria Inteligente Fase 3
-        const btnAniversario = `<a href="${numeroLimpo ? linkWpp + '?text=Ol%C3%A1%20' + p.nome.split(' ')[0] + '!%20Feliz%20anivers%C3%A1rio!%20Te%20desejo%20muita%20sa%C3%BAde%20e%20paz.%20Um%20abra%C3%A7o%20da%20cl%C3%ADnica!' : '#'}" target="_blank" class="btn-action" title="Feliz Aniversário" style="background:#FEF3C7; color:#D97706;" ${clickBloqueio}><i class="fas fa-birthday-cake"></i></a>`;
+        /* --- TEXTOS HUMANIZADOS --- */
+        const textoNiver = `Oi%20${p.nome.split(' ')[0]}!%20%F0%9F%8E%89%20Parab%C3%A9ns%20pelo%20seu%20dia!%20Que%20seja%20um%20ano%20de%20muita%20sa%C3%BAde%2C%20paz%20e%20alegrias.%20Um%20super%20abra%C3%A7o!`;
+        const textoCobranca = `Oi%20${p.nome.split(' ')[0]}%2C%20tudo%20bem%3F%20%F0%9F%A5%B0%20Passando%20rapidinho%20para%20te%20lembrar%20do%20vencimento%20do%20seu%20pacote%2Fmensalidade.%20Qualquer%20d%C3%BAvida%2C%20estou%20aqui!`;
+        const textoRenovacao = `Oi%20${p.nome.split(' ')[0]}!%20Passando%20para%20avisar%20que%20nosso%20pacote%20de%20sess%C3%B5es%20est%C3%A1%20na%20reta%20final.%20Vamos%20j%C3%A1%20garantir%20a%20renova%C3%A7%C3%A3o%20para%20manter%20seus%20hor%C3%A1rios%3F%20%F0%9F%A5%B0`;
+
+        const btnAniversario = `<a href="${numeroLimpo ? linkWpp + '?text=' + textoNiver : '#'}" target="_blank" class="btn-action" title="Feliz Aniversário" style="background:#FEF3C7; color:#D97706;" ${clickBloqueio}><i class="fas fa-birthday-cake"></i></a>`;
         
-        const btnCobranca = `<a href="${numeroLimpo ? linkWpp + '?text=Ol%C3%A1%20' + p.nome.split(' ')[0] + '!%20Tudo%20bem?%20Passando%20para%20lembrar%20do%20vencimento%20da%20nossa%20mensalidade%2Fpacote.%20Qualquer%20d%C3%BAvida%20estou%20%C3%A0%20disposi%C3%A7%C3%A3o!' : '#'}" target="_blank" class="btn-action" title="Lembrete de Pagamento" style="background:#FEE2E2; color:#DC2626;" ${clickBloqueio}><i class="fas fa-file-invoice-dollar"></i></a>`;
+        const btnCobranca = `<a href="${numeroLimpo ? linkWpp + '?text=' + textoCobranca : '#'}" target="_blank" class="btn-action" title="Lembrete de Pagamento" style="background:#FEE2E2; color:#DC2626;" ${clickBloqueio}><i class="fas fa-file-invoice-dollar"></i></a>`;
         
-        const btnRenovacao = `<a href="${numeroLimpo ? linkWpp + '?text=Ol%C3%A1%20' + p.nome.split(' ')[0] + '!%20Seu%20pacote%20de%20sess%C3%B5es%20est%C3%A1%20chegando%20ao%20fim.%20Vamos%20j%C3%A1%20deixar%20renovado%20para%20n%C3%A3o%20perder%20o%20seu%20hor%C3%A1rio%3F' : '#'}" target="_blank" class="btn-action" title="Renovar Pacote" style="background:#DCFCE7; color:#16A34A;" ${clickBloqueio}><i class="fas fa-sync-alt"></i></a>`;
+        const btnRenovacao = `<a href="${numeroLimpo ? linkWpp + '?text=' + textoRenovacao : '#'}" target="_blank" class="btn-action" title="Renovar Pacote" style="background:#DCFCE7; color:#16A34A;" ${clickBloqueio}><i class="fas fa-sync-alt"></i></a>`;
 
         return `
             <tr>
@@ -1110,7 +1157,6 @@ function atualizarUIPacientes(pagina = paginaAtualPacientes) {
             </tr>`;
     }).join('');
 
-    // Renderizar Botões de Paginação
     if (totalPaginas > 1) {
         let btnHtml = `<button class="page-btn" ${paginaAtualPacientes === 1 ? 'disabled' : ''} onclick="atualizarUIPacientes(${paginaAtualPacientes - 1})"><i class="fas fa-chevron-left"></i></button>`;
         btnHtml += `<span style="font-size:0.8rem; font-weight:bold; color:var(--text-light); margin: 0 10px;">Página ${paginaAtualPacientes} de ${totalPaginas}</span>`;
@@ -1120,7 +1166,7 @@ function atualizarUIPacientes(pagina = paginaAtualPacientes) {
         containerPagination.innerHTML = '';
     }
 }
-
+        
 // --- TERMO DE CONSENTIMENTO LGPD (FASE 3) ---
 function gerarTermoLGPD(pacienteId) {
     const p = db.pacientes.find(x => x.id === pacienteId);
@@ -1634,15 +1680,19 @@ async function salvarFin(){
 }
 
 function editarFin(id) {
-    const f = db.financeiro.find(x => x.id === id);
-    if (!f) return;
-    document.getElementById('f-id').value = f.id;
-    document.getElementById('f-desc').value = f.desc;
-    document.getElementById('f-valor').value = f.valor.toFixed(2).replace('.', ',');
-    document.getElementById('f-data').value = f.data;
-    document.getElementById('f-tipo').value = f.tipo;
-    document.getElementById('f-paciente').value = f.pacienteId || '';
-    openModal('modalFinanceiro');
+    const f = db.financeiro.find(x => x.id === id);
+    if (!f) return;
+    document.getElementById('f-id').value = f.id;
+    document.getElementById('f-desc').value = f.desc;
+    
+    /* Correção: Garante que o valor será lido corretamente para não dar tela branca */
+    const valorNumerico = parseFloat(f.valor) || 0;
+    document.getElementById('f-valor').value = valorNumerico.toFixed(2).replace('.', ',');
+    
+    document.getElementById('f-data').value = f.data;
+    document.getElementById('f-tipo').value = f.tipo;
+    document.getElementById('f-paciente').value = f.pacienteId || '';
+    openModal('modalFinanceiro');
 }
 
 async function excluirFin(id) {
@@ -1816,10 +1866,13 @@ function atualizarWidgetsDashboard() {
     const agendadosHoje = agHoje.length;
     const atendidosHoje = agHoje.filter(a => a.status === 'Atendido').length;
     const faltasHoje = agHoje.filter(a => a.status === 'Cancelado').length;
+    const remarcadosHoje = agHoje.filter(a => a.status === 'Remarcado').length;
     
     document.getElementById('wdg-agendados').innerText = agendadosHoje;
     document.getElementById('wdg-atendidos').innerText = atendidosHoje;
     document.getElementById('wdg-faltas').innerText = faltasHoje;
+    const elRemarcados = document.getElementById('wdg-remarcados');
+    if(elRemarcados) elRemarcados.innerText = remarcadosHoje;
 
     const pacotesAtivos = {};
     db.agenda.forEach(a => {
@@ -1854,28 +1907,53 @@ function atualizarWidgetsDashboard() {
         }).join('');
     }
 
+    /* --- INÍCIO: MOTOR DE VARREDURA DE PENDÊNCIAS (NÃO SOME MAIS NO OUTRO DIA) --- */
     const pendencias = [];
-    const hojeBr = new Date().toLocaleDateString('pt-BR');
     
-    const agAtendidosHoje = agHoje.filter(a => a.status === 'Atendido' && a.pacienteId);
-    agAtendidosHoje.forEach(at => {
-        const hasEvolucao = db.evolucoes.some(e => e.pacienteId === at.pacienteId && e.data.startsWith(hojeBr));
-        const nomePac = db.pacientes.find(p => p.id === at.pacienteId)?.nome || at.paciente;
-        if (!hasEvolucao) pendencias.push({ tipo: 'Evolução', desc: `Falta evolução de ${nomePac.split(' ')[0]}` });
+    // Pega TODOS os agendamentos antigos e de hoje que estão como "Atendido"
+    const todosAtendidos = db.agenda.filter(a => a.status === 'Atendido' && a.pacienteId);
+    
+    // Ordena do mais recente para o mais antigo, para os alertas ficarem na ordem certa
+    todosAtendidos.sort((a, b) => new Date(b.data) - new Date(a.data));
+
+    todosAtendidos.forEach(at => {
+        // Converte a data do agendamento para o formato BR (DD/MM/YYYY) para comparar com a Evolução
+        const partesData = at.data.split('-');
+        if(partesData.length === 3) {
+            const dataAgendamentoBr = `${partesData[2]}/${partesData[1]}/${partesData[0]}`;
+            
+            // Verifica se existe evolução para este paciente NAQUELA data do atendimento
+            const hasEvolucao = db.evolucoes.some(e => e.pacienteId === at.pacienteId && e.data.startsWith(dataAgendamentoBr));
+            
+            if (!hasEvolucao) {
+                const nomePac = db.pacientes.find(p => p.id === at.pacienteId)?.nome || at.paciente;
+                pendencias.push({ 
+                    tipo: 'Evolução', 
+                    desc: `Falta evoluir: ${nomePac.split(' ')[0]} (${dataAgendamentoBr})` 
+                });
+            }
+        }
     });
 
     const containerPendencias = document.getElementById('widget-pendencias');
     if (pendencias.length === 0) {
         containerPendencias.innerHTML = `<div style="text-align:center; color:var(--text-light); padding:10px 0;"><i class="fas fa-glass-cheers" style="font-size:1.5rem; opacity:0.5; margin-bottom:5px; display:block;"></i> Nenhuma pendência hoje!</div>`;
     } else {
-        containerPendencias.innerHTML = pendencias.map(p => {
+        // Mostra no máximo as 10 últimas pendências para não quebrar o layout da tela inicial
+        const pendenciasMostrar = pendencias.slice(0, 10);
+        containerPendencias.innerHTML = pendenciasMostrar.map(p => {
             return `
                 <div class="widget-item">
                     <span style="color:var(--danger);"><i class="fas fa-exclamation-circle"></i> ${p.desc}</span>
                     <button class="btn btn-small" onclick="showTab('prontuario')" style="padding:4px 8px; font-size:0.7rem;">Resolver</button>
                 </div>`;
         }).join('');
+        
+        if (pendencias.length > 10) {
+            containerPendencias.innerHTML += `<div style="text-align:center; font-size:0.75rem; color:var(--text-light); margin-top:5px;">+ ${pendencias.length - 10} evoluções mais antigas pendentes.</div>`;
+        }
     }
+    /* --- FIM: MOTOR DE PENDÊNCIAS --- */
 
     const listaNiver = document.getElementById('lista-aniversariantes');
     if (listaNiver) {
@@ -2155,13 +2233,17 @@ function renderAgenda(cid, view, dateContext) {
         const block = db.bloqueios.find(b => b.data === iso); 
         htmlBuffer = '<div class="timeline-container">';
         
+        /* --- AJUSTE: 24 HORAS, MAS LINHAS VAZIAS FICAM FININHAS --- */
         for(let hh = 0; hh <= 23; hh++) {
             const hstr = String(hh).padStart(2,'0'); 
             const evtsThisHour = db.agenda.filter(a => a.data === iso && a.hora.startsWith(hstr + ":"));
             const rowClass = block ? 'blocked-row' : ''; 
             const rowClick = (!block) ? `onclick="novoAgendamento('${iso}','${hstr}:00')"` : '';
             
-            htmlBuffer += `<div class="timeline-row ${rowClass}" ${rowClick}><div class="time-label">${hstr}:00</div><div class="events-track">`;
+            // Mágica da linha fininha
+            const alturaLinha = evtsThisHour.length === 0 ? "min-height: 25px;" : "min-height: 70px;";
+            
+            htmlBuffer += `<div class="timeline-row ${rowClass}" ${rowClick} style="${alturaLinha}"><div class="time-label">${hstr}:00</div><div class="events-track">`;
             
             if (evtsThisHour.length > 0) {
                 const grouped = {}; 
@@ -2183,12 +2265,15 @@ function renderAgenda(cid, view, dateContext) {
                         if (durMinutes <= 0) durMinutes = 60; 
                     }
                     
+                    /* --- REMARCADOS E CANCELADOS (Ficam mais opacos para não poluir) --- */
+                    const isInativo = mainEvt.status === 'Remarcado' || mainEvt.status === 'Cancelado';
                     const offsetTopPx = (minutosInicio / 60) * 65; 
-                    const heightPx = Math.max(50, (durMinutes / 60) * 65);
+                    const heightPx = isInativo ? 36 : Math.max(50, (durMinutes / 60) * 65);
+                    const opacidade = isInativo ? 0.6 : 1;
+                    const zIndexVal = isInativo ? 2 : 5;
                     
                     let cardBg = 'var(--card-bg)';
                     let cardBorder = mainEvt.cor || 'var(--accent)';
-                    let cardText = 'var(--text-main)';
                     if (mainEvt.prioridade) { cardBorder = '#2A52BE'; }
 
                     const chipsHtml = group.map(g => {
@@ -2218,7 +2303,7 @@ function renderAgenda(cid, view, dateContext) {
                         return `<span class="${chipClass}" onclick="event.stopPropagation(); editarAgendamento('${g.id}');" title="${title}" style="${style}">${icon}${title.split(' ')[0]}${bdayIcon}</span>`;
                     }).join('');
                     
-                    htmlBuffer += `<div class="grouped-card" onclick="event.stopPropagation(); editarAgendamento('${mainEvt.id}');" style="top: ${offsetTopPx}px; height: ${heightPx}px; border-color: ${cardBorder}; background:${cardBg};"><strong style="opacity:0.9; margin-bottom: 2px; font-size:0.75rem; color:var(--text-main);">${exactTime} as ${mainEvt.horaFim || '...'}</strong><div class="chips-container">${chipsHtml}</div></div>`;
+                    htmlBuffer += `<div class="grouped-card" onclick="event.stopPropagation(); editarAgendamento('${mainEvt.id}');" style="top: ${offsetTopPx}px; height: ${heightPx}px; border-color: ${cardBorder}; background:${cardBg}; opacity: ${opacidade}; z-index: ${zIndexVal};"><strong style="opacity:0.9; margin-bottom: 2px; font-size:0.75rem; color:var(--text-main);">${exactTime} as ${mainEvt.horaFim || '...'}</strong><div class="chips-container">${chipsHtml}</div></div>`;
                 });
             }
             htmlBuffer += '</div></div>';
@@ -2236,7 +2321,7 @@ function enviarZapLembrete(id){
     
     const d = e.data.split('-'); 
     const dataF = `${d[2]}/${d[1]}`; 
-    const texto = `Olá ${p.nome.split(' ')[0]}, tudo bem? Aqui é do consultório. Passando para lembrar do nosso agendamento dia ${dataF}, às ${e.hora}. Podemos confirmar sua presença?`; 
+    const texto = `Oi ${p.nome.split(' ')[0]}, tudo bem? 🥰 Passando para confirmar nossa sessão no dia ${dataF}, às ${e.hora}. Te aguardo!`; 
     window.open(`https://wa.me/55${p.tel.replace(/\D/g, '')}?text=${encodeURIComponent(texto)}`, '_blank'); 
 }
 
@@ -2262,6 +2347,16 @@ function novoAgendamento(date, time='08:00'){
     document.getElementById('ag-obs').value = ''; 
     document.getElementById('ag-prioridade').checked = false; 
     document.getElementById('ag-cor').value = ''; 
+
+    /* --- INÍCIO: INTELIGÊNCIA DOS SERVIÇOS E VALOR AVULSO --- */
+    document.getElementById('ag-valor-avulso').value = '';
+    const selServ = document.getElementById('ag-servico');
+    if(selServ) {
+        selServ.innerHTML = '<option value="">Selecione o Serviço...</option>' + db.servicos.map(s => `<option value="${s.cor}">${s.nome}</option>`).join('');
+        selServ.value = '';
+        selServ.onchange = (e) => { document.getElementById('ag-cor').value = e.target.value; };
+    }
+    /* --- FIM --- */
     
     document.getElementById('ag-is-pacote').checked = false;
     document.getElementById('ag-is-pacote').disabled = false;
@@ -2349,7 +2444,6 @@ async function salvarAgendamento(){
         if (diasSelecionados.length === 0) return showToast("Selecione pelo menos um dia da semana para o pacote.", "error");
         if (isNaN(qtd) || qtd < 2) return showToast("Quantidade de sessões inválida.", "error");
 
-        // FASE 3: Correção de Fuso Horário e Promise de Salvamento em Massa
         let dataAtual = new Date(d + "T12:00:00"); 
         let sessoesCriadas = 0;
         const pacoteIdHash = 'PAC_' + Date.now();
@@ -2375,15 +2469,14 @@ async function salvarAgendamento(){
         }
         
         const valorTotalStr = document.getElementById('ag-pacote-valor').value;     
-               if (valorTotalStr) {
+        if (valorTotalStr) {
             const valFloat = parseFloat(valorTotalStr.replace(/\./g, '').replace(',', '.'));
             if (valFloat > 0) {
-                // BACKLOG: Sincronização Estrita (Injeção de ID e formatação de data)
                 const finObj = { 
                     id: 'FIN_' + Date.now().toString() + Math.random().toString(36).substr(2, 5),
                     desc: `Pacote: ${pacoteNome}`, 
                     valor: valFloat, 
-                    data: d, // Data exata selecionada no formulário de agendamento (YYYY-MM-DD)
+                    data: d, 
                     tipo: 'entrada', 
                     pacienteId: pacienteId 
                 };
@@ -2416,6 +2509,31 @@ async function salvarAgendamento(){
                 evt.pacoteTotal = existing.pacoteTotal;
             }
         }
+
+        /* --- INÍCIO: FINANCEIRO EXPRESSO (SESSÃO AVULSA) --- */
+        if (!id) { 
+            const valorAvulsoStr = document.getElementById('ag-valor-avulso').value;
+            if (valorAvulsoStr) {
+                const valFloat = parseFloat(valorAvulsoStr.replace(/\./g, '').replace(',', '.'));
+                if (valFloat > 0) {
+                    const selServ = document.getElementById('ag-servico');
+                    const servicoNome = (selServ && selServ.selectedIndex > 0) ? selServ.options[selServ.selectedIndex].text : 'Sessão Avulsa';
+
+                    const finObj = {
+                        id: 'FIN_' + Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                        desc: servicoNome,
+                        valor: valFloat,
+                        data: d,
+                        tipo: 'entrada',
+                        pacienteId: pacienteId
+                    };
+                    db.financeiro.push(finObj);
+                    showToast("Receita da sessão lançada no Financeiro!", "success");
+                    await CloudAPI.setDados(db);
+                }
+            }
+        }
+        /* --- FIM: FINANCEIRO EXPRESSO --- */
 
         try { 
             await CloudAPI.salvarAgendamento(evt); 
