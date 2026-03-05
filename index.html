@@ -50,17 +50,24 @@ window.onerror = function(message, source, lineno, colno, error) {
     --font-serif: 'Outfit', sans-serif;
 }
 
+    /* PALETA DE CORES PREMIUM */
+.color-swatch { width: 26px; height: 26px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.15); display: inline-block; }
+.color-swatch.active { border-color: var(--text-main); transform: scale(1.15); }
+    
 * { 
     margin: 0; padding: 0; box-sizing: border-box; 
     font-family: var(--font-main); outline: none; 
     -webkit-tap-highlight-color: transparent; 
 }
 
-/* TRAVA DO CELULAR */
-html {
-    max-width: 100vw;
-    overflow-x: hidden;
-    overscroll-behavior: none;
+/* TRAVA DO CELULAR (FIM DO SAMBA) */
+html, body {
+    position: fixed; /* A mágica que "prega" o sistema na tela e não deixa sambar */
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none; /* Remove o efeito elástico das bordas no celular */
+    touch-action: pan-y; /* Trava qualquer arrasto para os lados, permitindo só pra cima/baixo */
 }
 
 /* CORPO DO SISTEMA */
@@ -72,9 +79,6 @@ body {
         radial-gradient(at 100% 100%, rgba(44, 74, 59, 0.05) 0px, transparent 65%),
         radial-gradient(at 0% 100%, rgba(197, 160, 89, 0.05) 0px, transparent 65%);
     display: flex; 
-    height: 100vh; 
-    width: 100vw; 
-    overflow: hidden; 
     color: var(--text-main); 
     transition: all 0.3s ease;
 }
@@ -86,8 +90,8 @@ body.focus-mode .content { padding: 10px; }
 
 /* LOGIN SCREEN */
 #login-screen { position: fixed; inset: 0; background: var(--bg-body); z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column;}
-.login-box { background: var(--card-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.8); padding: 35px 25px; border-radius: 24px; text-align: center; width: 90%; max-width: 380px; box-shadow: var(--shadow); display: flex; flex-direction: column; align-items: center; }
-.login-box h3 { font-family: var(--font-serif); color: var(--accent); font-size: 2rem; margin-bottom: 5px; font-weight: 600; }
+.login-box { background: var(--card-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.8); padding: 30px 20px; border-radius: 24px; text-align: center; width: 90%; max-width: 320px; box-shadow: var(--shadow); display: flex; flex-direction: column; align-items: center; }
+.login-box h3 { font-family: var(--font-serif); color: var(--accent); font-size: 1.6rem; margin-bottom: 5px; font-weight: 600; }
 .login-box h4 { font-family: var(--font-title); font-size: 0.75rem; color: var(--accent-gold); font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; }
 .login-box small { display: block; font-size: 0.75rem; color: var(--text-light); margin-bottom: 20px; letter-spacing: 1px; font-weight: 400; }
 
@@ -107,7 +111,7 @@ body.focus-mode .content { padding: 10px; }
 
 /* MAIN CONTENT */
 .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; transition: all 0.3s ease; }
-.top-bar { padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255,255,255,0.5); z-index: 10; transition: all 0.3s ease; }
+.top-bar { padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255,255,255,0.5); z-index: 10; transition: all 0.3s ease; }
 .top-bar-left { display: flex; align-items: center; gap: 15px; flex: 1; }
 .top-bar h3 { font-family: var(--font-serif); font-size: 1.5rem; color: var(--accent); font-weight: 600; margin: 0; } 
 #relogio { font-family: var(--font-title); font-weight: 600; color: var(--accent-gold); font-size: 0.9rem; background: var(--input-bg); padding: 6px 12px; border-radius: 10px; border: 1px solid rgba(197, 160, 89, 0.2); }
@@ -115,7 +119,7 @@ body.focus-mode .content { padding: 10px; }
 #btn-mobile-menu { display: inline-block; font-size: 1.2rem; cursor: pointer; border: none; background: transparent; color: var(--accent); margin-right: 5px; transition: 0.2s; }
 #btn-mobile-menu:hover { color: var(--accent-gold); transform: scale(1.1); }
 
-.content { flex: 1; padding: 25px 35px; overflow-y: auto; scroll-behavior: smooth; transition: all 0.3s ease; }
+.content { flex: 1; padding: 15px 20px; overflow-y: auto; scroll-behavior: smooth; transition: all 0.3s ease; }
 .tab-content { display: none; animation: fadeIn 0.4s ease; }
 .tab-content.active { display: block; }
 
@@ -201,7 +205,7 @@ label { font-size: 0.7rem; font-weight: 600; color: var(--accent); text-transfor
 .week-view-container { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
 .week-col { background: rgba(255,255,255,0.45); border-radius: 14px; padding: 8px; min-height: 200px; border: 1px solid rgba(255,255,255,0.8); }
 .week-header { text-align: center; font-weight: 700; color: var(--accent); border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 8px; margin-bottom: 8px; font-size: 0.9rem; }
-.week-card { background: var(--card-bg); padding: 12px 14px; border-radius: 10px; border-left: 5px solid var(--accent); margin-bottom: 12px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; color: var(--text-main); font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+.week-card { background: var(--card-bg); padding: 8px 10px; border-radius: 8px; border-left: 4px solid var(--accent); margin-bottom: 8px; font-size: 0.75rem; line-height: 1.2; cursor: pointer; transition: all 0.2s; color: var(--text-main); font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
 .week-card:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 
 .timeline-container { background: rgba(255,255,255,0.45); border-radius: 16px; border: 1px solid rgba(255,255,255,0.8); margin-top: 15px; padding-bottom: 50px; }
@@ -224,7 +228,7 @@ label { font-size: 0.7rem; font-weight: 600; color: var(--accent); text-transfor
 
 /* NOVOS WIDGETS DASHBOARD */
 .dashboard-widgets-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; margin-top: 20px; }
-.dash-widget { background: var(--card-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); padding: 15px 20px; border-radius: var(--radius); box-shadow: var(--shadow); max-height: 280px; display: flex; flex-direction: column; transition: 0.3s; }
+.dash-widget { background: var(--card-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); padding: 12px 15px; border-radius: var(--radius); box-shadow: var(--shadow); max-height: 280px; display: flex; flex-direction: column; transition: 0.3s; }
 .dash-widget:hover { transform: translateY(-2px); border-color: rgba(197, 160, 89, 0.3); }
 .dash-widget h5 { font-family: var(--font-serif); color: var(--accent); margin-bottom: 12px; font-weight: 600; font-size: 1rem; border-bottom: 2px solid rgba(197, 160, 89, 0.1); padding-bottom: 10px; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .widget-content { flex: 1; overflow-y: auto; padding-right: 5px; }
@@ -709,10 +713,20 @@ select::-ms-expand { display: none; }
 
                 <hr style="margin:20px 0; border:0; border-top:1px solid rgba(197, 160, 89, 0.3);">
                 <h5>Serviços Oferecidos</h5>
-                <div style="display:flex; gap:10px; margin-bottom:15px;">
+                <div style="display:flex; gap:10px; margin-bottom:10px;">
                     <input type="text" id="new-serv-nome" placeholder="Ex: Pilates" style="margin:0;">
-                    <input type="color" id="new-serv-cor" value="#3A5A48" style="width:50px; padding:2px; height:38px; border-radius:8px; margin:0;">
+                    <input type="hidden" id="new-serv-cor" value="#3A5A48">
                     <button class="btn btn-filled" onclick="addServico()">Adicionar</button>
+                </div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:15px;">
+                    <span class="color-swatch active" style="background:#3A5A48;" onclick="document.getElementById('new-serv-cor').value='#3A5A48'; document.querySelectorAll('.color-swatch').forEach(e=>e.classList.remove('active')); this.classList.add('active');" title="Verde Principal"></span>
+                    <span class="color-swatch" style="background:#5D8A45;" onclick="document.getElementById('new-serv-cor').value='#5D8A45'; document.querySelectorAll('.color-swatch').forEach(e=>e.classList.remove('active')); this.classList.add('active');" title="Verde Claro"></span>
+                    <span class="color-swatch" style="background:#C5A059;" onclick="document.getElementById('new-serv-cor').value='#C5A059'; document.querySelectorAll('.color-swatch').forEach(e=>e.classList.remove('active')); this.classList.add('active');" title="Dourado"></span>
+                    <span class="color-swatch" style="background:#8C6B5D;" onclick="document.getElementById('new-serv-cor').value='#8C6B5D'; document.querySelectorAll('.color-swatch').forEach(e=>e.classList.remove('active')); this.classList.add('active');" title="Nude"></span>
+                    <span class="color-swatch" style="background:#B53F41;" onclick="document.getElementById('new-serv-cor').value='#B53F41'; document.querySelectorAll('.color-swatch').forEach(e=>e.classList.remove('active')); this.classList.add('active');" title="Rubi"></span>
+                    <span class="color-swatch" style="background:#2A52BE;" onclick="document.getElementById('new-serv-cor').value='#2A52BE'; document.querySelectorAll('.color-swatch').forEach(e=>e.classList.remove('active')); this.classList.add('active');" title="Azul Royal"></span>
+                    <span class="color-swatch" style="background:#7E22CE;" onclick="document.getElementById('new-serv-cor').value='#7E22CE'; document.querySelectorAll('.color-swatch').forEach(e=>e.classList.remove('active')); this.classList.add('active');" title="Lavanda"></span>
+                    <span class="color-swatch" style="background:#1E3325;" onclick="document.getElementById('new-serv-cor').value='#1E3325'; document.querySelectorAll('.color-swatch').forEach(e=>e.classList.remove('active')); this.classList.add('active');" title="Verde Musgo"></span>
                 </div>
                 <div id="lista-servicos" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
             </div>
@@ -927,15 +941,7 @@ select::-ms-expand { display: none; }
 // ==========================================
 const CloudAPI = {
     getDados: async () => JSON.parse(localStorage.getItem('fisiov_jack_GOLD_V9_FASE3')) || JSON.parse(localStorage.getItem('fisiov_jack_GOLD_V9_FASE2')) || JSON.parse(localStorage.getItem('fisiov_jack_GOLD_V8')) || {},
-    setDados: async (data) => {
-        try {
-            localStorage.setItem('fisiov_jack_GOLD_V9_FASE3', JSON.stringify(data));
-            return true;
-        } catch (e) {
-            alert("⚠️ ALERTA DE MEMÓRIA (TESTE LOCAL): Limite de armazenamento atingido por causa das fotos. Apague algumas fotos do prontuário para o sistema voltar a salvar. (Este limite deixará de existir quando conectarmos ao Firebase).");
-            return false;
-        }
-    },
+    setDados: async (data) => localStorage.setItem('fisiov_jack_GOLD_V9_FASE3', JSON.stringify(data)),
     
     salvarPaciente: async (pacienteObj) => {
         let dados = await CloudAPI.getDados();
