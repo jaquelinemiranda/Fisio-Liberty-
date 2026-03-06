@@ -119,7 +119,7 @@ body.focus-mode .content { padding: 10px; }
 #btn-mobile-menu { display: inline-block; font-size: 1.2rem; cursor: pointer; border: none; background: transparent; color: var(--accent); margin-right: 5px; transition: 0.2s; }
 #btn-mobile-menu:hover { color: var(--accent-gold); transform: scale(1.1); }
 
-.content { flex: 1; padding: 15px 20px; overflow-y: auto; scroll-behavior: smooth; transition: all 0.3s ease; }
+.content { flex: 1; padding: 15px 20px; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; transition: all 0.3s ease; overscroll-behavior-y: none; -webkit-overflow-scrolling: touch; padding-bottom: 90px; }
 .tab-content { display: none; animation: fadeIn 0.4s ease; }
 .tab-content.active { display: block; }
 
@@ -196,7 +196,7 @@ label { font-size: 0.7rem; font-weight: 600; color: var(--accent); text-transfor
 .cal-day { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.9); border-radius: 14px; min-height: 90px; padding: 8px; cursor: pointer; transition: all 0.2s; position: relative; }
 .cal-day:hover { border-color: rgba(197, 160, 89, 0.5); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 .cal-day.today { border: 2px solid var(--accent-gold); }
-.cal-day.blocked { background: rgba(255, 235, 235, 0.6); cursor: not-allowed !important; opacity: 0.9; border-color: var(--danger); }
+.cal-day.blocked { background: rgba(255, 235, 235, 0.6); cursor: pointer; opacity: 0.9; border-color: var(--danger); }
 .cal-num { font-weight: 700; font-size: 0.9rem; color: var(--accent); margin-bottom: 6px; display: block; font-family: var(--font-serif); }
 .cal-dots { display: flex; flex-wrap: wrap; gap: 4px; }
 .cal-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; cursor: pointer; transition: transform 0.2s; }
@@ -211,7 +211,7 @@ label { font-size: 0.7rem; font-weight: 600; color: var(--accent); text-transfor
 .timeline-container { background: rgba(255,255,255,0.45); border-radius: 16px; border: 1px solid rgba(255,255,255,0.8); margin-top: 15px; padding-bottom: 50px; }
 .timeline-row { display: flex; border-bottom: 1px solid rgba(0,0,0,0.04); transition: 0.2s; align-items: stretch; cursor: pointer; position: relative; min-height: 65px; }
 .timeline-row:hover { background: rgba(255,255,255,0.6); }
-.timeline-row.blocked-row { background: rgba(255, 235, 235, 0.4); cursor: not-allowed; pointer-events: none; }
+.timeline-row.blocked-row { background: rgba(255, 235, 235, 0.4); cursor: pointer; }
 .time-label { width: 70px; border-right: 1px solid rgba(0,0,0,0.04); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--accent-gold); font-size: 0.75rem; flex-shrink: 0; font-family: var(--font-title); }
 .events-track { flex: 1; position: relative; display: block; }
 .grouped-card { border-left: 4px solid var(--accent); padding: 6px 10px; border-radius: 10px; cursor: pointer; transition: 0.2s; display: flex; align-items: flex-start; flex-direction: column; border: 1px solid rgba(255,255,255,1); position: absolute; left: 10px; right: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 5; overflow: hidden; }
@@ -319,12 +319,23 @@ select::-ms-expand { display: none; }
     }
     
     /* Ajustes extras para o celular */
-    .stat-grid { grid-template-columns: 1fr; gap: 10px; }
+    .stat-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .stat-box { padding: 12px 4px; font-size: 0.65rem; border-radius: 10px; }
+    .stat-box span { font-size: 1.1rem; margin-top: 4px; }
     .dashboard-widgets-grid { grid-template-columns: 1fr; }
 }
 
 .chip-dia { padding: 6px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: 0.2s; border: 1px solid rgba(0,0,0,0.1); background: var(--card-bg); color: var(--text-light); display: inline-block; text-align: center; }
 .chip-dia.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+/* --- AJUSTE DOS BOTOES DA AGENDA NO TABLET E CELULAR --- */
+.agenda-header-actions { display: flex; gap: 10px; }
+.agenda-header-controls { display: flex; align-items: center; gap: 15px; }
+@media (max-width: 768px) {
+    .agenda-header-actions { width: 100%; justify-content: space-between; }
+    .agenda-header-actions .btn { flex: 1; }
+    .agenda-header-controls { width: 100%; justify-content: space-between; flex-wrap: wrap; }
+}
 </style>
     <body>
 
@@ -526,7 +537,7 @@ select::-ms-expand { display: none; }
             
             <div class="table-container">
                 <table>
-                    <thead><tr><th>Data</th><th>Descrição</th><th>Valor</th><th>Ação</th></tr></thead>
+                    <thead><tr><th>Data</th><th>Descrição</th><th>Valor</th><th style="text-align:right;">Ação</th></tr></thead>
                     <tbody id="tbody-financeiro"></tbody>
                 </table>
             </div>
@@ -583,13 +594,13 @@ select::-ms-expand { display: none; }
         </div>
 
         <div id="agenda" class="tab-content">
-            <div class="card" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px 20px;">
-                <div>
+            <div class="card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; padding: 15px 20px;">
+                <div class="agenda-header-actions">
                     <button class="btn btn-filled" onclick="novoAgendamento(getSafeDateISO(new Date()))"><i class="fas fa-plus"></i> Novo</button>
-                    <button class="btn btn-filled" style="background:var(--danger); border:none; margin-left: 5px;" onclick="bloquearDiaHoje()"><i class="fas fa-lock"></i> Bloqueios</button>
+                    <button class="btn btn-filled" style="background:var(--danger); border:none;" onclick="bloquearDiaHoje()"><i class="fas fa-lock"></i> Bloqueios</button>
                 </div>
-                <div style="display:flex; align-items:center;">
-                    <div class="view-controls" style="margin-right:15px;">
+                <div class="agenda-header-controls">
+                    <div class="view-controls" style="margin: 0;">
                         <button class="view-btn active" id="btn-ag-dia" onclick="mudarView('dia', 'agenda-calendar-container')">Dia</button>
                         <button class="view-btn" id="btn-ag-sem" onclick="mudarView('sem', 'agenda-calendar-container')">Semana</button>
                         <button class="view-btn" id="btn-ag-mes" onclick="mudarView('mes', 'agenda-calendar-container')">Mês</button>
@@ -795,7 +806,7 @@ select::-ms-expand { display: none; }
 
 <div id="modalFinanceiro" class="modal">
     <div class="modal-content">
-        <h3 style="text-align:center;">Lançamento Financeiro</h3>
+        <h3 id="modal-fin-title" style="text-align:center;">Novo Lançamento</h3>
         <form id="form-f" onsubmit="event.preventDefault();">
             <input type="hidden" id="f-id">
             <label>Vincular a Paciente (Busca Inteligente / Opcional)</label>
@@ -922,15 +933,30 @@ select::-ms-expand { display: none; }
 <div id="modalBloqueio" class="modal" style="z-index:10000;">
     <div class="modal-content" style="max-width: 350px;">
         <h3 style="text-align:center;">Gestão de Bloqueios</h3>
-        <input type="date" id="bloqueio-data-input" style="margin-bottom:15px;">
+        <input type="hidden" id="bloqueio-id-oculto">
+        <div style="display:flex; gap:10px; margin-bottom:15px;">
+            <div style="flex:2;"><label>Data</label><input type="date" id="bloqueio-data-input" onchange="checkBloqueioStatus()"></div>
+            <div style="flex:1;">
+                <label>Período</label>
+                <select id="bloqueio-tipo" onchange="toggleBloqueioTipo()" style="padding-right: 10px !important;">
+                    <option value="dia">Dia Todo</option>
+                    <option value="hora">1 Hora</option>
+                </select>
+            </div>
+        </div>
+        <div id="bloqueio-hora-container" style="display:none; margin-bottom:15px;">
+            <label>Horário do Bloqueio</label>
+            <input type="time" id="bloqueio-hora-input" onchange="checkBloqueioStatus()">
+        </div>
         <div id="area-bloquear">
-            <label>Motivo</label>
+            <label>Motivo / Ocupação</label>
             <input type="text" id="bloqueio-motivo" placeholder="Ex: Feriado, Viagem...">
-            <button class="btn btn-filled" style="width:100%; background:var(--danger);" onclick="confirmarBloqueio()">BLOQUEAR DATA</button>
+            <button class="btn btn-filled" style="width:100%; background:var(--danger);" onclick="confirmarBloqueio()">BLOQUEAR AGENDA</button>
         </div>
         <div id="area-desbloquear" style="display:none;">
-            <p style="color:var(--danger); font-weight:bold; margin-bottom:15px; text-align:center;">DATA BLOQUEADA</p>
-            <button class="btn" style="width:100%; border:2px solid var(--success); color:var(--success);" onclick="desbloquearData()">DESBLOQUEAR</button>
+            <p style="color:var(--danger); font-weight:bold; margin-bottom:5px; text-align:center;"><i class="fas fa-lock"></i> BLOQUEADO</p>
+            <p id="lbl-bloqueio-motivo" style="text-align:center; font-size:0.85rem; color:var(--text-light); margin-bottom:15px;"></p>
+            <button class="btn" style="width:100%; border:2px solid var(--success); color:var(--success);" onclick="desbloquearData()">DESBLOQUEAR ESPAÇO</button>
         </div>
         <button class="btn" style="width:100%; margin-top:10px; border: 1px solid rgba(0,0,0,0.1);" onclick="closeModal('modalBloqueio')">Cancelar</button>
     </div>
@@ -1214,11 +1240,11 @@ function atualizarUIPacientes(pagina = paginaAtualPacientes) {
 
     if (pacientesFiltrados.length === 0) {
         tbodyPac.innerHTML = `
-            <tr>
-                <td colspan="4">
+            <tr style="background: transparent; box-shadow: none; border: none;">
+                <td colspan="4" style="display: block; border: none !important; padding: 0 !important;">
                     <div class="empty-state">
                         <i class="fas fa-users"></i>
-                        <p>Nenhum paciente encontrado.</p>
+                        <p>Nenhum paciente cadastrado para este filtro.</p>
                     </div>
                 </td>
             </tr>`;
@@ -1800,18 +1826,29 @@ async function salvarFin(){
 function editarFin(id) {
     const f = db.financeiro.find(x => x.id === id);
     if (!f) return;
+    
+    // 1º PASSO: Abre o modal e deixa o sistema fazer a limpeza padrão dele
+    openModal('modalFinanceiro');
+    
+    // 2º PASSO: Agora sim, injetamos os dados antigos para edição!
+    const titulo = document.getElementById('modal-fin-title');
+    if(titulo) titulo.innerText = 'Editar Lançamento';
+    
     document.getElementById('f-id').value = f.id;
     document.getElementById('f-desc').value = f.desc;
     
-    /* Correção: Garante que o valor será lido corretamente para não dar tela branca */
     const valorNumerico = parseFloat(f.valor) || 0;
     document.getElementById('f-valor').value = valorNumerico.toFixed(2).replace('.', ',');
     
     document.getElementById('f-data').value = f.data;
     document.getElementById('f-tipo').value = f.tipo;
+    
+    // Atualiza o visual do botão chique de Receita/Despesa
+    const fakeTipo = document.getElementById('fake-f-tipo');
+    if(fakeTipo) fakeTipo.value = f.tipo === 'entrada' ? 'Receita' : 'Despesa';
+    
     document.getElementById('f-paciente').value = f.pacienteId || '';
     document.getElementById('busca-f-paciente').value = db.pacientes.find(p=>p.id===f.pacienteId)?.nome || '';
-    openModal('modalFinanceiro');
 }
 
 async function excluirFin(id) {
@@ -1906,6 +1943,7 @@ function openModal(id, idx=null){
     
     if (id === 'modalEvolucao') { document.getElementById('form-ev').reset(); document.getElementById('busca-ev-paciente').value = ''; }
     if (id === 'modalFinanceiro') { 
+        document.getElementById('modal-fin-title').innerText = 'Novo Lançamento';
         document.getElementById('form-f').reset();
         document.getElementById('f-id').value = '';        
         document.getElementById('busca-f-paciente').value = ''; 
@@ -1979,6 +2017,11 @@ function addServico(){
     db.servicos.push({nome, cor});
     CloudAPI.setDados(db).then(() => atualizarUI());
     document.getElementById('new-serv-nome').value = ""; 
+    
+    // LINHA NOVA: Reseta a paleta visual para a primeira bolinha
+    document.querySelectorAll('.color-swatch').forEach((e,i)=> { e.classList.remove('active'); if(i===0) e.classList.add('active'); }); 
+    document.getElementById('new-serv-cor').value = '#3A5A48';
+
     showToast("Serviço adicionado!");
 }
 
@@ -2279,7 +2322,7 @@ function navegarAgenda(d) {
     atualizarUI(); 
 }
 
- function renderAgenda(cid, view, dateContext) {
+function renderAgenda(cid, view, dateContext) {
     const c = document.getElementById(cid); 
     if (!c) return; 
     
@@ -2306,23 +2349,25 @@ function navegarAgenda(d) {
         
         for(let i = 1; i <= dim; i++) {
             const iso = `${y}-${String(m+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
-            const block = db.bloqueios.find(b => b.data === iso); 
+            const blockDay = db.bloqueios.find(b => b.data === iso && (b.tipo === 'dia' || !b.tipo));
+            const blockHours = db.bloqueios.filter(b => b.data === iso && b.tipo === 'hora');
+            
             const evts = db.agenda.filter(a => a.data === iso); 
             const isToday = (iso === getSafeDateISO(new Date()));
-            const clickAction = block ? '' : `onclick="verDiaDetalhe('${iso}')"`;
+            const clickAction = blockDay ? `onclick="abrirDesbloqueio('${iso}', 'dia')"` : `onclick="verDiaDetalhe('${iso}')"`;
             
-            // CIRURGIA 1: Transformando Bolinhas em Etiquetas com Nome (Visão Mês)
             const dotsHtml = evts.map(e => {
                 let dotColor = e.prioridade ? '#2A52BE' : (e.cor || 'var(--accent)');
                 if (e.status === 'Atendido') dotColor = 'var(--success)';
                 if (e.status === 'Remarcado') dotColor = 'var(--warning)';
                 if (e.status === 'Cancelado') dotColor = 'var(--danger)';
-                
                 const tituloEvt = db.pacientes.find(p => p.id === e.pacienteId)?.nome || e.paciente || e.titulo;
                 return `<div style="width: 100%; background:${dotColor}; color:#fff; font-size:0.65rem; padding:3px 5px; border-radius:4px; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer;" onclick="event.stopPropagation(); editarAgendamento('${e.id}')" title="${tituloEvt} - ${e.hora}"><strong>${e.hora}</strong> ${tituloEvt.split(' ')[0]}</div>`;
             }).join('');
             
-            htmlBuffer += `<div class="cal-day ${block?'blocked':''} ${isToday?'today':''}" ${clickAction}><span class="cal-num">${i}</span><div class="cal-dots" style="display:flex; flex-direction:column; gap:2px;">${dotsHtml}</div></div>`;
+            const blocksHtmlMonth = blockHours.map(b => `<div style="width: 100%; background:var(--danger); color:#fff; font-size:0.65rem; padding:3px 5px; border-radius:4px; margin-bottom:2px; cursor:pointer;" onclick="event.stopPropagation(); abrirDesbloqueio('${iso}', 'hora', '${b.hora}')"><strong><i class="fas fa-lock"></i> ${b.hora}</strong></div>`).join('');
+            
+            htmlBuffer += `<div class="cal-day ${blockDay?'blocked':''} ${isToday?'today':''}" ${clickAction}><span class="cal-num">${i}</span><div class="cal-dots" style="display:flex; flex-direction:column; gap:2px;">${blocksHtmlMonth}${dotsHtml}</div></div>`;
         }
         htmlBuffer += '</div>';
         
@@ -2331,16 +2376,17 @@ function navegarAgenda(d) {
         start.setDate(d - start.getDay()); 
         htmlBuffer = '<div class="week-view-container">';
         
-        // Array com os nomes curtos da semana para a CIRURGIA 2
         const diasDaSemanaNomes = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
         for(let i = 0; i < 7; i++) {
             let curr = new Date(start); 
             curr.setDate(start.getDate() + i); 
             const iso = getSafeDateISO(curr); 
-            const block = db.bloqueios.find(b => b.data === iso); 
+            const blockDay = db.bloqueios.find(b => b.data === iso && (b.tipo === 'dia' || !b.tipo));
+            const blockHours = db.bloqueios.filter(b => b.data === iso && b.tipo === 'hora');
+            
             const evts = db.agenda.filter(a => a.data === iso).sort((a,b) => a.hora.localeCompare(b.hora));
-            const colClick = block ? '' : `onclick="novoAgendamento('${iso}')"`;
+            const colClick = blockDay ? `onclick="abrirDesbloqueio('${iso}', 'dia')"` : `onclick="novoAgendamento('${iso}')"`;
             
             let weekCards = '';
             if (evts.length > 0) {
@@ -2356,7 +2402,6 @@ function navegarAgenda(d) {
                     let cardBg = 'var(--card-bg)';
                     let cardBorder = mainEvt.cor || 'var(--accent)';
                     let cardText = 'var(--text-main)';
-                    
                     if (mainEvt.prioridade) { cardBorder = '#2A52BE'; }
                     
                     const weekChips = group.map(g => {
@@ -2374,39 +2419,57 @@ function navegarAgenda(d) {
                         if (pacData && pacData.nasc) {
                             const nd = pacData.nasc.split('-');
                             const currentIsoParts = iso.split('-');
-                            if (nd[1] === currentIsoParts[1] && nd[2] === currentIsoParts[2]) {
-                                bdayIcon = ' <i class="fas fa-birthday-cake" style="color: #FFD700; margin-left: 2px;" title="Aniversariante do dia!"></i>';
-                            }
+                            if (nd[1] === currentIsoParts[1] && nd[2] === currentIsoParts[2]) { bdayIcon = ' <i class="fas fa-birthday-cake" style="color: #FFD700; margin-left: 2px;"></i>'; }
                         }
-
                         return `<span style="${chipStyle}">${tituloG}${bdayIcon}</span>`;
                     }).join(' ');
 
                     weekCards += `<div class="week-card" onclick="event.stopPropagation(); editarAgendamento('${mainEvt.id}');" style="border-left:4px solid ${cardBorder}; background:${cardBg}; color:${cardText};"><strong>${h} - ${mainEvt.horaFim || '...'}</strong><br><div style="margin-top:4px;">${weekChips}</div></div>`;
                 });
             }
-            // CIRURGIA 2: Injetando o nome do dia da semana (Visão Semana)
+            
+            blockHours.forEach(b => {
+                weekCards += `<div class="week-card" onclick="event.stopPropagation(); abrirDesbloqueio('${iso}', 'hora', '${b.hora}');" style="border-left:4px solid var(--danger); background:rgba(181, 63, 65, 0.05); color:var(--danger);"><strong><i class="fas fa-lock"></i> ${b.hora}</strong><br><small>${b.motivo || 'Bloqueado'}</small></div>`;
+            });
+
             const nomeDoDia = diasDaSemanaNomes[curr.getDay()];
-            htmlBuffer += `<div class="week-col ${block?'blocked-col':''}" ${colClick}><div class="week-header">${nomeDoDia}, ${curr.getDate()}/${curr.getMonth()+1}</div>${weekCards}</div>`;
+            htmlBuffer += `<div class="week-col ${blockDay?'blocked-col':''}" ${colClick}><div class="week-header">${nomeDoDia}, ${curr.getDate()}/${curr.getMonth()+1}</div>${weekCards}</div>`;
         }
         htmlBuffer += '</div>';
         
     } else {
         const iso = getSafeDateISO(dateContext); 
-        const block = db.bloqueios.find(b => b.data === iso); 
+        const blockDay = db.bloqueios.find(b => b.data === iso && (b.tipo === 'dia' || !b.tipo));
+        const blockHours = db.bloqueios.filter(b => b.data === iso && b.tipo === 'hora');
+        
         htmlBuffer = '<div class="timeline-container">';
         
         for(let hh = 0; hh <= 23; hh++) {
             const hstr = String(hh).padStart(2,'0'); 
             const evtsThisHour = db.agenda.filter(a => a.data === iso && a.hora.startsWith(hstr + ":"));
-            const rowClass = block ? 'blocked-row' : ''; 
-            const rowClick = (!block) ? `onclick="novoAgendamento('${iso}','${hstr}:00')"` : '';
+            const bThisHour = blockHours.find(b => b.hora.startsWith(hstr + ":"));
             
-            const alturaLinha = evtsThisHour.length === 0 ? "min-height: 25px;" : "min-height: 70px;";
+            let rowClass = '';
+            let rowClick = '';
+            
+            if (blockDay) {
+                rowClass = 'blocked-row';
+                rowClick = `onclick="abrirDesbloqueio('${iso}', 'dia')"`;
+            } else if (bThisHour) {
+                rowClass = 'blocked-row';
+                rowClick = `onclick="abrirDesbloqueio('${iso}', 'hora', '${bThisHour.hora}')"`;
+            } else {
+                rowClick = `onclick="novoAgendamento('${iso}','${hstr}:00')"`;
+            }
+            
+            const alturaLinha = evtsThisHour.length === 0 && !bThisHour ? "min-height: 25px;" : "min-height: 70px;";
             
             htmlBuffer += `<div class="timeline-row ${rowClass}" ${rowClick} style="${alturaLinha}"><div class="time-label">${hstr}:00</div><div class="events-track">`;
             
-            if (evtsThisHour.length > 0) {
+            if (bThisHour) {
+                htmlBuffer += `<div class="grouped-card" style="top: 0px; height: 50px; border-color: var(--danger); background:rgba(181, 63, 65, 0.05); z-index: 5;"><strong style="opacity:0.9; margin-bottom: 2px; font-size:0.75rem; color:var(--danger);"><i class="fas fa-lock"></i> Bloqueado</strong><div class="chips-container"><span class="chip" style="color:var(--danger); border:none; background:transparent; padding:0;">${bThisHour.motivo || 'Ocupado'}</span></div></div>`;
+            }
+            else if (evtsThisHour.length > 0) {
                 const grouped = {}; 
                 evtsThisHour.forEach(e => { 
                     if (!grouped[e.hora]) grouped[e.hora] = []; 
@@ -2428,8 +2491,6 @@ function navegarAgenda(d) {
                     
                     const isInativo = mainEvt.status === 'Remarcado' || mainEvt.status === 'Cancelado';
                     const offsetTopPx = (minutosInicio / 60) * 65; 
-                    
-                    // CIRURGIA 3: Remover o corte (height=36px) dos inativos, deixando a altura real calculada! (Visão Dia)
                     const heightPx = Math.max(50, (durMinutes / 60) * 65);
                     const opacidade = isInativo ? 0.6 : 1;
                     const zIndexVal = isInativo ? 2 : 5;
@@ -2440,10 +2501,7 @@ function navegarAgenda(d) {
 
                     const chipsHtml = group.map(g => {
                         let title = db.pacientes.find(p => p.id === g.pacienteId)?.nome || g.paciente || g.titulo; 
-                        let icon = ''; 
-                        let chipClass = 'chip';
-                        let style = `border: 1px solid rgba(0,0,0,0.1);`;
-
+                        let icon = ''; let chipClass = 'chip'; let style = `border: 1px solid rgba(0,0,0,0.1);`;
                         if (g.status === 'Atendido') { icon = '<i class="fas fa-check-circle"></i> '; chipClass += ' bg-atendido'; style += 'border-color: rgba(0,0,0,0.1);'; }
                         else if (g.status === 'Remarcado') { icon = '<i class="fas fa-sync"></i> '; chipClass += ' bg-remarcado'; style += 'border-color: rgba(0,0,0,0.1);'; }
                         else if (g.status === 'Cancelado') { icon = '<i class="fas fa-times-circle"></i> '; chipClass += ' bg-cancelado'; style += 'border-color: rgba(0,0,0,0.1);'; }
@@ -2451,7 +2509,6 @@ function navegarAgenda(d) {
                             if (g.prioridade) { style += `background-color: #2A52BE; color: white; border-color: #2A52BE;`; } 
                             else { style += `color: var(--text-main);`; }
                         }
-
                         let bdayIcon = '';
                         const pacData = db.pacientes.find(x => x.id === g.pacienteId);
                         if (pacData && pacData.nasc) {
@@ -2461,7 +2518,6 @@ function navegarAgenda(d) {
                                 bdayIcon = ' <i class="fas fa-birthday-cake" style="color: #FFD700; margin-left: 4px; animation: pulse 2s infinite;" title="Aniversariante do dia!"></i>';
                             }
                         }
-
                         return `<span class="${chipClass}" onclick="event.stopPropagation(); editarAgendamento('${g.id}');" title="${title}" style="${style}">${icon}${title.split(' ')[0]}${bdayIcon}</span>`;
                     }).join('');
                     
@@ -2473,7 +2529,7 @@ function navegarAgenda(d) {
         htmlBuffer += '</div>';
     }
     c.innerHTML = htmlBuffer;
-}                                                                        
+}
 
 function enviarZapLembrete(id){ 
     const e = db.agenda.find(x => x.id === id); 
@@ -2544,38 +2600,71 @@ function novoAgendamento(date, time='08:00'){
 }
 
 function bloquearDiaHoje() { 
-    const iso = getSafeDateISO(agendaDate); 
+    abrirModalBloqueio(getSafeDateISO(agendaDate), 'dia', ''); 
+}
+
+function abrirDesbloqueio(iso, tipo, hora='') {
+    abrirModalBloqueio(iso, tipo, hora);
+}
+
+function abrirModalBloqueio(iso, tipo, hora) {
     document.getElementById('bloqueio-data-input').value = iso; 
-    checkBloqueioStatus(iso); 
-    document.getElementById('bloqueio-data-input').onchange = function(){ checkBloqueioStatus(this.value) }; 
+    document.getElementById('bloqueio-tipo').value = tipo || 'dia';
+    document.getElementById('bloqueio-hora-input').value = hora || '';
+    toggleBloqueioTipo();
+    checkBloqueioStatus(); 
     openModal('modalBloqueio'); 
 }
 
-function checkBloqueioStatus(iso) { 
-    const b = db.bloqueios.find(x => x.data === iso); 
-    document.getElementById('area-bloquear').style.display = b ? 'none' : 'block'; 
-    document.getElementById('area-desbloquear').style.display = b ? 'block' : 'none'; 
+function toggleBloqueioTipo() {
+    const t = document.getElementById('bloqueio-tipo').value;
+    document.getElementById('bloqueio-hora-container').style.display = t === 'hora' ? 'block' : 'none';
+    checkBloqueioStatus();
+}
+
+function checkBloqueioStatus() { 
+    const d = document.getElementById('bloqueio-data-input').value; 
+    const t = document.getElementById('bloqueio-tipo').value;
+    const h = document.getElementById('bloqueio-hora-input').value;
+    
+    const b = db.bloqueios.find(x => x.data === d && (x.tipo === t || (!x.tipo && t === 'dia')) && (t === 'dia' || x.hora === h)); 
+    
+    if(b) {
+        document.getElementById('area-bloquear').style.display = 'none'; 
+        document.getElementById('area-desbloquear').style.display = 'block'; 
+        document.getElementById('lbl-bloqueio-motivo').innerText = b.motivo || 'Motivo não informado';
+        document.getElementById('bloqueio-id-oculto').value = b.id || d; 
+    } else {
+        document.getElementById('area-bloquear').style.display = 'block'; 
+        document.getElementById('area-desbloquear').style.display = 'none'; 
+        document.getElementById('bloqueio-id-oculto').value = '';
+    }
 }
 
 async function confirmarBloqueio() { 
     const d = document.getElementById('bloqueio-data-input').value;
+    const t = document.getElementById('bloqueio-tipo').value;
+    const h = document.getElementById('bloqueio-hora-input').value;
     const m = document.getElementById('bloqueio-motivo').value; 
     
-    if (d && m) { 
-        db.bloqueios.push({data: d, motivo: m}); 
-        await CloudAPI.setDados(db); 
-        closeModal('modalBloqueio'); 
-        showToast("Data bloqueada!"); 
-        atualizarUI();
-    } 
+    if (!d) return showToast("Selecione a data", "error");
+    if (t === 'hora' && !h) return showToast("Selecione a hora", "error");
+    
+    db.bloqueios.push({id: 'BLK_'+Date.now(), data: d, tipo: t, hora: t === 'hora' ? h : '', motivo: m}); 
+    await CloudAPI.setDados(db); 
+    closeModal('modalBloqueio'); 
+    showToast(t === 'dia' ? "Dia bloqueado!" : "Horário bloqueado!"); 
+    atualizarUI();
 }
 
 async function desbloquearData() { 
-    const d = document.getElementById('bloqueio-data-input').value; 
-    db.bloqueios = db.bloqueios.filter(x => x.data !== d); 
+    const id = document.getElementById('bloqueio-id-oculto').value; 
+    if(id.startsWith('BLK_')) { db.bloqueios = db.bloqueios.filter(x => x.id !== id); } 
+    else { db.bloqueios = db.bloqueios.filter(x => x.data !== id); } // Compatibilidade com bloqueios velhos
+    
     await CloudAPI.setDados(db); 
     closeModal('modalBloqueio'); 
-    showToast("Data desbloqueada!"); 
+    showToast("Espaço desbloqueado!"); 
     atualizarUI();
 }
 
